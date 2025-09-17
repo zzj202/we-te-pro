@@ -55,23 +55,24 @@ const props = defineProps({
     default: () => []
   }
 })
-const currentRace =computed(() => {
+const currentRace = computed(() => {
   return raceStore.getCurrentRace()
 })
 
 
 // 加载数据
 const loadData = async () => {
-  const oldState = currentRace
+  const oldState = raceStore.getCurrentRace()
   try {
     await raceStore.loadFromKvAPI()
-    const newState = currentRace
-    if (oldState.totalAmount === newState.totalAmount) {
+    const newState = currentRace.value
+    if (oldState.addTotalAmount === newState.addTotalAmount) {
       message.warning('当前数据金额未发生更改', { duration: 1000 })
     } else {
-      const diff = newState.totalAmount - oldState.totalAmount
+      const diff = newState.addTotalAmount - oldState.addTotalAmount
+      console.log(newState)
       const diffText = diff > 0 ? `增加 ${formatAmount(diff)}` : `减少 ${formatAmount(Math.abs(diff))}`
-      message.success(`刷新成功~金额由 ${formatAmount(oldState.totalAmount)} ➡️ ${formatAmount(newState.totalAmount)}，${diffText}`, {
+      message.success(`刷新成功~金额由 ${formatAmount(oldState.addTotalAmount)} ➡️ ${formatAmount(newState.addTotalAmount)}，${diffText}`, {
         duration: 8000
       })
       message.success(`最后修改时间: ${dayjs(newState.updatedAt).format('YYYY-MM-DD HH:mm:ss')} (${dayjs(newState.updatedAt).fromNow()})`, {

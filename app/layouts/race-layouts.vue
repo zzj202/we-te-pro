@@ -27,8 +27,8 @@ const route = useRoute()
 const menuItems = [
   { path: '/developing', text: '发展', icon: '😄' },
   { path: '/show', text: '数据展示', icon: '📈' },
-  { path: '/races', text: '比赛管理', icon: '🕒' },
   { path: '/operation', text: '加注操作', icon: '💸' },
+  { path: '/races', text: '比赛管理', icon: '🕒' },
   { path: '/prizes', text: '开奖记录', icon: '🙂' },
   // { path: '/dashboard', text: '仪表盘', icon: '📊' },
   // { path: '/operation', text: '批量加注', icon: '💸' },
