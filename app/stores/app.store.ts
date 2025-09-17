@@ -2,7 +2,7 @@ export const useAppStore = defineStore('app', {
     state: () => ({
         password: null as string | null,
         // 你可以设置一个默认密码，或者从环境变量中读取
-        correctPassword: process.env.DEFAULT_PASSWORD || 'admin123'
+        correctPassword: '133'
     }),
     actions: {
         setPassword(pwd: string) {

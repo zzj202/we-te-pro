@@ -198,7 +198,7 @@ export const useRaceStore = defineStore('race', {
             };
             race.operationRecords.push(operationRecord)
             await this.saveTokvAPI()  //更新session  和 session:id
-            message.success(`加注成功!总金额${totalAmount}元`)
+            message.success(`加注成功!共${bets.length}条！总金额${totalAmount}元`)
         },
         //抛注
         async placePao(addBetLines: BetLine | BetLine[]) {
@@ -252,7 +252,7 @@ export const useRaceStore = defineStore('race', {
             };
             race.operationRecords.push(operationRecord)
             await this.saveTokvAPI()  //更新session  和 session:id
-            message.success(`抛出成功!总金额${totalAmount}元`)
+            message.success(`抛出成功!共${bets.length}条！总金额${totalAmount}元`)
         },
         //撤销加注
         async cancelBet(record: BetRecord) {
@@ -275,7 +275,6 @@ export const useRaceStore = defineStore('race', {
             race.addTotalAmount -= bet.amount * bet.numbers.length
             race.betRecords.splice(index, 1)
             race.updatedAt = new Date().toISOString()
-
 
             // 创建操作记录
             const operationRecord: OperationRecord = {
