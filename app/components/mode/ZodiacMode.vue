@@ -85,7 +85,7 @@ const validateInput = (input) => {
     input = input?.split(/共|合计/)[0]
     if (!input) return;
 
-    if (input.includes('平')) {
+    if (input.includes('平')||input.includes('连')) {
         errorMessage.value = '暂不支持平投注';
         return;
     }

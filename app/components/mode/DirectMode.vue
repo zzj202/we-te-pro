@@ -121,11 +121,11 @@ const invalidNumbers = computed(() => {
 const hasInvalidNumbers = computed(() => invalidNumbers.value.length > 0);
 
 const isValid = computed(() => {
-    if (inputValue.value === '' && amount.value == 0 && selectedNumbers.value.length == 0) {
+    if (!hasInvalidNumbers.value&&inputValue.value === '' && amount.value == 0 && selectedNumbers.value.length == 0) {
         mainStore.setBetLineValid(props.index);
         mainStore.setType(props.index, '直选');
         return true
-    } else if (inputValue.value !== '' && amount.value != 0 && selectedNumbers.value.length != 0) {
+    } else if (!hasInvalidNumbers.value&&inputValue.value !== '' && amount.value != 0 && selectedNumbers.value.length != 0) {
         mainStore.setType(props.index, '直选');
         mainStore.setBetLineValid(props.index);
         return true
