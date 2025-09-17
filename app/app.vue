@@ -11,9 +11,12 @@
 
 
 const raceStore = useRaceStore()
+const appStore = useAppStore()
 
 onMounted(() => {
-  raceStore.loadFromKvAPI()
+  if (appStore.isAuthenticated()) {
+    raceStore.loadFromKvAPI()
+  }
 })
 
 </script>

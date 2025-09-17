@@ -1,20 +1,22 @@
 export const useAppStore = defineStore('app', {
     state: () => ({
         password: null as string | null,
-        // 你可以设置一个默认密码，或者从环境变量中读取
-        correctPassword: '133'
+        correctPassword: btoa('133')
     }),
     actions: {
         setPassword(pwd: string) {
-            this.password = pwd
+            // 存储加密后的密码
+            this.password = btoa(pwd)
         },
         clearPassword() {
             this.password = null
         },
         validatePassword(pwd: string): boolean {
-            return pwd === this.correctPassword
+            // 比较加密后的密码
+            return btoa(pwd) === this.correctPassword
         },
         isAuthenticated(): boolean {
+            // 比较加密后的密码
             return this.password === this.correctPassword
         }
     },

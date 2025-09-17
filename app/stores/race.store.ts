@@ -137,6 +137,12 @@ export const useRaceStore = defineStore('race', {
             const categories = await kvAPI.get('race:category')
             if (categories) {
                 this.raceCategories = categories
+                if (!this.currentCategoryId) {
+                    this.currentCategoryId = categories[0].id
+                }
+                if (!this.currentRaceId) {
+                    this.currentRaceId = categories[0].races[0].id
+                }
             }
         },
         //保存redis

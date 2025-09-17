@@ -63,6 +63,7 @@ definePageMeta({
 
 const route = useRoute()
 const appStore = useAppStore()
+const raceStore = useRaceStore()
 const password = ref('')
 const error = ref('')
 
@@ -70,6 +71,7 @@ const handleSubmit = () => {
   if (appStore.validatePassword(password.value)) {
     appStore.setPassword(password.value)
     const redirectPath = route.query.redirect || '/'
+    raceStore.loadFromKvAPI()
     navigateTo(redirectPath)
   } else {
     error.value = '密码错误，请重试'

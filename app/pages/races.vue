@@ -55,8 +55,9 @@ const raceStore = useRaceStore()
 const prizeStore = usePrizeStore()
 const raceCreateDialog = ref(null)
 const raceEditDialog = ref(null)
-const activeCategoryId = ref(raceStore.getCurrentCategory().id || null)
+const activeCategoryId = ref(raceStore.getCurrentCategory()?.id || null)
 const router = useRouter()
+
 
 // 处理查看场次
 const handleViewRace = (raceId) => {
