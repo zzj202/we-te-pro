@@ -1,13 +1,14 @@
-export default defineNuxtRouteMiddleware((to, from) => {
-    const appStore = useAppStore()
+// middleware/auth.global.ts
+export default defineNuxtRouteMiddleware((to) => {
+  // 服务端直接放行，由客户端处理认证
+  if (process.server) return
 
-    // 定义不需要密码的白名单路由
-    const whitelist = ['/login','/']
+  const appStore = useAppStore()
+  const whitelist = ['/login', '/']
 
-    if (whitelist.includes(to.path) || appStore.isAuthenticated()) {
-        return
-    }
+  if (whitelist.includes(to.path) || appStore.isAuthenticated()) {
+    return
+  }
 
-    // 将原始目标路径存储在query参数中
-    return navigateTo(`/login?redirect=${encodeURIComponent(to.fullPath)}`)
+  return navigateTo(`/login?redirect=${encodeURIComponent(to.fullPath)}`)
 })

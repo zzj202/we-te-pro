@@ -2,14 +2,11 @@
     <div class="lottery-result" :class="{ 'invalid-state': !mainStore.isValid(index) }">
         <div class="input-section">
             <div class="editable-input-container">
-                <input v-model="editableValue" @input="updateInputValue" class="editable-input"
-                    placeholder="输入生肖和金额，例如：鼠 牛 虎 各2" />
+                <input v-model="inputValue" class="editable-input" placeholder="输入生肖和金额，例如：鼠 牛 虎 各2" />
                 <span class="input-hint">格式：号码1 号码2 号码3... 各金额</span>
             </div>
         </div>
-
         <ResultArea :amount="amount" :selected-numbers="selectedNumbers" :total-amount="totalAmount"></ResultArea>
-
         <div v-if="hasInvalidNumbers" class="error-message">
             <div class="error-header">
                 <span class="error-icon">
@@ -32,13 +29,14 @@
             </div>
         </div>
         <ErrorDisplayArea v-if="errorMessage" :message="errorMessage" />
+        <!--千万不能删除-->
+        <div v-if="isValid"></div>
     </div>
 </template>
 
 <script setup>
 import { computed, ref, watch } from 'vue';
 import ResultArea from '../area/ResultArea.vue';
-
 import ErrorDisplayArea from '../area/ErrorDisplayArea.vue';
 
 const mainStore = useMainStore()
@@ -48,21 +46,12 @@ const props = defineProps({
         required: true
     }
 });
-
-const editableValue = ref(mainStore.getLineInputValue(props.index) || '');
 const errorMessage = ref('')
+const inputValue = computed({
+    get: () => mainStore.getLineInputValue(props.index) || '',
+    set: (value) => { errorMessage.value = '', mainStore.updateBetLine(props.index, value) }
+})
 
-// 处理输入值
-const inputValue = computed(() => {
-    errorMessage.value = '';
-    const result = mainStore.getLineInputValue(props.index) || '';
-    editableValue.value = result
-    return result || '';
-});
-
-const updateInputValue = () => {
-    mainStore.updateBetLine(props.index, editableValue.value);
-};
 
 const allNumbers = computed(() => {
     const matches = inputValue.value.split(/共|合计|共计/)[0].match(/\d+/g);
@@ -70,6 +59,7 @@ const allNumbers = computed(() => {
 });
 
 const selectedNumbers = computed(() => {
+    errorMessage.value = ''
     const inputValueTmp = inputValue.value.split(/共|合计|共计/)[0];
     if (!inputValueTmp.match(/\d+/g)) {
         if (inputValue.value != '') {
@@ -132,22 +122,18 @@ const hasInvalidNumbers = computed(() => invalidNumbers.value.length > 0);
 
 const isValid = computed(() => {
     if (inputValue.value === '' && amount.value == 0 && selectedNumbers.value.length == 0) {
-        return true
-    } else if (inputValue.value !== '' && amount.value != 0 && selectedNumbers.value.length != 0) {
-        return true
-    } else {
-        return false
-    }
-});
-
-watch(() => [isValid.value], (newVal) => {
-    if (newVal[0]) {
         mainStore.setBetLineValid(props.index);
         mainStore.setType(props.index, '直选');
-    } else {
-        mainStore.setBetLineInvalid(props.index);
+        return true
+    } else if (inputValue.value !== '' && amount.value != 0 && selectedNumbers.value.length != 0) {
+        mainStore.setType(props.index, '直选');
+        mainStore.setBetLineValid(props.index);
+        return true
     }
-}, { immediate: true });
+    mainStore.setBetLineInvalid(props.index);
+    return false
+
+});
 </script>
 
 <style scoped>

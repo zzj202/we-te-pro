@@ -4,48 +4,51 @@
       <div class="login-header">
         <div class="logo-container">
           <svg class="logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8z" fill="#4F46E5"/>
-            <path d="M12 6c-3.313 0-6 2.687-6 6s2.687 6 6 6 6-2.687 6-6-2.687-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" fill="#4F46E5"/>
-            <circle cx="12" cy="12" r="2" fill="#4F46E5"/>
+            <path
+              d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8z"
+              fill="#4F46E5" />
+            <path
+              d="M12 6c-3.313 0-6 2.687-6 6s2.687 6 6 6 6-2.687 6-6-2.687-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"
+              fill="#4F46E5" />
+            <circle cx="12" cy="12" r="2" fill="#4F46E5" />
           </svg>
         </div>
         <h1>欢迎回来</h1>
         <p>请验证您的身份</p>
       </div>
-      
+
       <form @submit.prevent="handleSubmit" class="login-form">
         <div class="form-group">
           <div class="input-container">
-            <input 
-              id="password"
-              v-model="password" 
-              type="password" 
-              placeholder=" "
-              class="form-input"
-              @focus="error = ''"
-            />
+            <input id="password" v-model="password" type="password" placeholder=" " class="form-input"
+              @focus="error = ''" />
             <label for="password">密码</label>
             <div class="underline"></div>
           </div>
         </div>
-        
+
         <button type="submit" class="submit-btn">
           <span class="btn-text">继续</span>
-          <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
           </svg>
         </button>
-        
+
         <transition name="fade">
           <p v-if="error" class="error-message">
-            <svg class="error-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 8V12M12 16H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg class="error-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12 8V12M12 16H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             {{ error }}
           </p>
         </transition>
       </form>
-      
+
       <div class="login-footer">
         <p>遇到问题？<a href="#" class="help-link">获取帮助</a></p>
       </div>
@@ -55,7 +58,7 @@
 
 <script setup>
 definePageMeta({
-  layout: 'custom'
+  layout: 'custom-layouts'
 })
 
 const route = useRoute()
@@ -94,6 +97,7 @@ const handleSubmit = () => {
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
+  margin: 40px;
 }
 
 .login-card::before {
@@ -162,8 +166,8 @@ const handleSubmit = () => {
   border-bottom-color: #4F46E5;
 }
 
-.form-input:focus + label,
-.form-input:not(:placeholder-shown) + label {
+.form-input:focus+label,
+.form-input:not(:placeholder-shown)+label {
   transform: translateY(-20px) scale(0.85);
   color: #4F46E5;
 }
@@ -192,8 +196,13 @@ label {
   transition: width 0.4s ease;
 }
 
-.form-input:focus ~ .underline {
+.form-input:focus~.underline {
   width: 100%;
+}
+
+.login-form {
+  position: relative;
+  margin-bottom: 10px;
 }
 
 .submit-btn {
@@ -231,15 +240,20 @@ label {
 }
 
 .error-message {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  right: 0;
   color: #DC2626;
   background: #FEF2F2;
   padding: 12px 16px;
   border-radius: 8px;
   font-size: 14px;
-  margin-top: 20px;
   display: flex;
   align-items: center;
   animation: shake 0.5s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
 }
 
 .error-icon {
@@ -266,24 +280,39 @@ label {
   color: #3730A3;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.3s ease;
 }
-.fade-enter-from, .fade-leave-to {
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-5px); }
-  40%, 80% { transform: translateX(5px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20%,
+  60% {
+    transform: translateX(-5px);
+  }
+
+  40%,
+  80% {
+    transform: translateX(5px);
+  }
 }
 
 @media (max-width: 480px) {
   .login-card {
     padding: 32px 24px;
   }
-  
+
   .login-header h1 {
     font-size: 24px;
   }

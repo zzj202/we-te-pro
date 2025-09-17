@@ -1,24 +1,25 @@
 // stores/main.ts
 import { defineStore } from 'pinia'
+import type { BetLine } from '~/types/race.types'
 
-import type { BetLine } from '~/types/game.types'
+
 
 export const useMainStore = defineStore('main', {
     state: () => ({
         addBetString: '' as string,
         addBetLines: [] as BetLine[],
-        userBrowser:'' as String
+        userBrowser: '' as String
     }),
-
     getters: {
         isAllValid(): boolean {
             if (this.addBetLines.length === 0) return false
             return this.addBetLines.every(line => line.isValid)
         },
-
     },
-
     actions: {
+        setAddBetString(str: string) {
+            this.addBetString = str
+        },
         //解析addBetString
         handleAddBetString() {
             this.addBetLines = []
@@ -96,18 +97,9 @@ export const useMainStore = defineStore('main', {
             return this.addBetLines.find(line => line.index === index)?.isValid
         },
         isCanConfirm(): { canConfirm: boolean; invalidIndexes: number[] } {
-
-            // if (!this.addBetLines || this.addBetLines.length == 0) {
-            //     return {
-            //         canConfirm: false,
-            //         invalidIndexes: [],
-            //     };
-            // }
             const invalidIndexes: number[] = [];
             this.addBetLines.forEach((betLine, index) => {
-                if (
-                    !betLine.isValid
-                ) {
+                if (!betLine.isValid) {
                     invalidIndexes.push(index + 1);
                 }
             });
@@ -120,9 +112,8 @@ export const useMainStore = defineStore('main', {
             this.addBetString = ''
             this.addBetLines = []
         },
-
-        setUserBroswer(broswer:string){
-            this.userBrowser=broswer
+        setUserBroswer(broswer: string) {
+            this.userBrowser = broswer
         }
     }
 })

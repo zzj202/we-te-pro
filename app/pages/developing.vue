@@ -1,10 +1,10 @@
 <template>
-    <div>dsf</div>sdf
+    <div>dsf</div>
 </template>
 
 <script setup>
 
 definePageMeta({
-    layout: 'custom'
+    layout: 'race-layouts'
 })
 </script>

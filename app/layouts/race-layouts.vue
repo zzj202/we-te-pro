@@ -25,14 +25,18 @@ const isSidebarCollapsed = ref(true)
 const isMobile = ref(false)
 const route = useRoute()
 const menuItems = [
-  { path: '/dashboard', text: '仪表盘', icon: '📊' },
-  { path: '/sessions', text: '场次管理', icon: '🕒' },
-  { path: '/datashow', text: '数据展示', icon: '📈' },
-  { path: '/operation', text: '批量加注', icon: '💸' },
-  { path: '/oneOperation', text: '单次加注', icon: '💰' },
-  { path: '/addHistory', text: '加注记录', icon: '🗃️' },
+  { path: '/developing', text: '发展', icon: '😄' },
+  { path: '/show', text: '数据展示', icon: '📈' },
+  { path: '/races', text: '比赛管理', icon: '🕒' },
+  { path: '/operation', text: '加注操作', icon: '💸' },
+  { path: '/prizes', text: '开奖记录', icon: '🙂' },
+  // { path: '/dashboard', text: '仪表盘', icon: '📊' },
+  // { path: '/operation', text: '批量加注', icon: '💸' },
+  // { path: '/oneOperation', text: '单次加注', icon: '💰' },
+  // { path: '/addHistory', text: '加注记录', icon: '🗃️' },
   { path: '/history', text: '操作记录', icon: '📝' },
   { path: '/settings', text: '系统设置', icon: '⚙️' },
+  // { path: '/settings', text: '系统设置', icon: '⚙️' },
   { path: '/pao', text: '场次抛号', icon: '🍵' }
 ]
 
@@ -44,15 +48,12 @@ function toggleSidebar() {
   isSidebarCollapsed.value = !isSidebarCollapsed.value
 }
 
-
-
 function checkMobile() {
   isMobile.value = window.innerWidth < 768
   if (isMobile.value) {
     isSidebarCollapsed.value = true
   }
 }
-
 onMounted(() => {
   checkMobile()
   window.addEventListener('resize', checkMobile)
@@ -73,7 +74,6 @@ onBeforeUnmount(() => {
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   --bg-color: #f8fafc;
   --content-bg: #ffffff;
-
   display: flex;
   min-height: 100vh;
   background-color: var(--bg-color);
@@ -92,10 +92,8 @@ onBeforeUnmount(() => {
   transition: var(--transition);
 }
 
-
 .content-wrapper {
   flex: 1;
-
   overflow-y: hidden;
   height: calc(100vh - var(--topbar-height));
 }

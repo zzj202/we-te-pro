@@ -24,11 +24,9 @@ const props = defineProps({
   },
     isCollapsed: {
     type: Boolean,
-    default: false
+    default: true
   }
 })
-
-
 
 </script>
 

@@ -10,15 +10,27 @@
                 <span class="record-count" v-if="betRecords.length > 0">(共{{ betRecords.length }}条)</span>
             </h3>
             <div class="header-actions">
+                <!-- 原输入搜索框 -->
                 <div class="search-control">
-                    <input v-model="searchKeyword" type="text" placeholder="搜索原输入..." class="search-input"
+                    <input v-model="searchInputValue" type="text" placeholder="搜索原输入..." class="search-input"
                         @keyup.enter="applySearch" />
-                    <button class="search-btn" @click="applySearch">
+                    <!-- <button class="search-btn" @click="applySearch">
                         <svg class="icon" viewBox="0 0 24 24">
                             <path
                                 d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
                         </svg>
-                    </button>
+                    </button> -->
+                </div>
+                <!-- 号码搜索框 -->
+                <div class="search-control">
+                    <input v-model="searchNumberValue" type="text" placeholder="搜索号码..." class="search-input"
+                        @keyup.enter="applySearch" />
+                    <!-- <button class="search-btn" @click="applySearch">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path
+                                d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                        </svg>
+                    </button> -->
                 </div>
                 <div class="filter-control">
                     <select v-model="filterType" class="filter-select">
@@ -57,8 +69,8 @@
                         <th class="col-count">数量</th>
                         <th class="col-time">时间</th>
                         <th class="col-actions">操作</th>
-                        <th class="col-count">原输入</th>
-                        <th class="col-count">描述</th>
+                        <th class="col-input">原输入</th>
+                        <th class="col-desc">描述</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -75,7 +87,7 @@
                         </td>
                         <td class="col-total">
                             <span class="total-amount-value">¥{{ (record.amount * record.numbers.length)
-                            }}</span>
+                                }}</span>
                         </td>
                         <td class="col-amount">
                             <span class="amount-value">¥{{ record.amount }}</span>
@@ -83,7 +95,6 @@
                         <td class="col-count">
                             <span class="count-value">{{ record.numbers.length }}</span>
                         </td>
-
                         <td class="col-time" :title="formatFullTime(record.timestamp)">
                             <svg class="icon clock-icon" viewBox="0 0 24 24">
                                 <path
@@ -99,11 +110,10 @@
                                 </svg>
                             </button>
                         </td>
-
-                        <td>
+                        <td class="col-input">
                             <span>{{ record.inputValue }}</span>
                         </td>
-                        <td>
+                        <td class="col-desc">
                             <span>{{ record.description }}</span>
                         </td>
                     </tr>
@@ -132,16 +142,24 @@ import { createDiscreteApi } from 'naive-ui'
 const { dialog, message, loadingBar } = createDiscreteApi(
     ['dialog', 'message', 'loadingBar']
 )
+const props = defineProps({
+    use: {
+        type: String,
+        default: 'bet'
+    }
+});
+
 // 扩展dayjs插件
 dayjs.extend(relativeTime)
 dayjs.locale('zh-cn') // 设置为中文
 
-const gameStore = useGameStore()
+const raceStore = useRaceStore()
 const betRecords = ref([])
 const lastRefreshTime = ref(dayjs())
 const loading = ref(false)
 const filterType = ref('all')
-const searchKeyword = ref('')
+const searchInputValue = ref('') // 原输入搜索关键字
+const searchNumberValue = ref('') // 号码搜索关键字
 
 const emit = defineEmits(['delete-record', 'refresh-records'])
 
@@ -149,16 +167,24 @@ const emit = defineEmits(['delete-record', 'refresh-records'])
 const filteredRecords = computed(() => {
     let records = betRecords.value
 
-    // 先按玩法类型过滤
+    // 按玩法类型过滤
     if (filterType.value !== 'all') {
         records = records.filter(record => record.type === filterType.value)
     }
 
-    // 再按关键字搜索
-    if (searchKeyword.value.trim()) {
-        const keyword = searchKeyword.value.trim().toLowerCase()
+    // 按原输入搜索
+    if (searchInputValue.value.trim()) {
+        const keyword = searchInputValue.value.trim().toLowerCase()
         records = records.filter(record =>
             record.inputValue && record.inputValue.toLowerCase().includes(keyword)
+        )
+    }
+
+    // 按号码搜索
+    if (searchNumberValue.value.trim()) {
+        const keyword = searchNumberValue.value.trim().toLowerCase()
+        records = records.filter(record =>
+            record.numbers.some(num => num.toString().toLowerCase().includes(keyword))
         )
     }
 
@@ -172,20 +198,34 @@ onMounted(async () => {
 const loadRecords = async () => {
     try {
         loading.value = true
-        await gameStore.loadSessions()
-        betRecords.value = gameStore.currentSession.betRecords || []
+        await raceStore.loadFromKvAPI()
+        if (props.use == 'bet') {
+            betRecords.value = raceStore.getCurrentRace().betRecords || []
+        } else if (props.use == 'pao') {
+            betRecords.value = raceStore.getCurrentRace().paoRecords || []
+        } else {
 
+        }
         lastRefreshTime.value = dayjs()
     } catch (error) {
         console.error('加载投注记录失败:', error)
+        message.error('加载投注记录失败')
     } finally {
         loading.value = false
     }
 }
 
 const refreshRecords = async () => {
-    await loadRecords()
-    emit('refresh-records')
+    loadingBar.start()
+    try {
+        await loadRecords()
+        emit('refresh-records')
+        message.success('刷新成功')
+    } catch (error) {
+        message.error('刷新失败')
+    } finally {
+        loadingBar.finish()
+    }
 }
 
 const applySearch = () => {
@@ -204,7 +244,6 @@ const getTypeClass = (type) => {
         '单双': 'type-primary',
         '波色': 'type-warning',
         '包头尾': 'type-success',
-        
         '包肖': 'type-danger',
         '直选': 'type-info'
     }
@@ -223,28 +262,98 @@ const formatRelativeTime = (timestamp) => {
 
 const confirmDelete = async (record) => {
     dialog.warning({
-        title: '撤销投注',
-        content: '你确定要撤销？',
+        title: '撤销',
+        content: '你确定要撤销这条记录吗？',
         positiveText: '确定',
         negativeText: '取消',
         maskClosable: false,
-        onPositiveClick: () => {
-            gameStore.cancelBet(record)
+        onPositiveClick: async () => {
+            try {
+                if (props.use == 'bet') {
+                    await raceStore.cancelBet(record)
+                } else if (props.use == 'pao') {
+                    await raceStore.cancelPao(record)
+                }
+                message.success('撤销成功')
+                await loadRecords()
+            } catch (error) {
+                message.error('撤销失败: ' + error.message)
+            }
         },
         onNegativeClick: () => {
-            message.warning('取消')
+            message.info('已取消操作')
         }
     })
 }
 </script>
 
 <style scoped lang="scss">
-/* 新增搜索相关样式 */
+.bet-history-container {
+    margin: 16px;
+    padding: 16px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    font-size: 14px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.history-title {
+    display: flex;
+    align-items: center;
+    color: #333;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+
+    .icon {
+        width: 18px;
+        height: 18px;
+        margin-right: 8px;
+        fill: #1890ff;
+    }
+}
+
+.record-count {
+    margin-left: 8px;
+    font-size: 13px;
+    color: #999;
+    font-weight: normal;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    >* {
+        flex-shrink: 0;
+    }
+}
+
 .search-control {
     position: relative;
     display: flex;
     align-items: center;
-    width: 200px;
+    width: 180px;
     border: 1px solid #e0e0e0;
     border-radius: 6px;
     overflow: hidden;
@@ -297,66 +406,6 @@ const confirmDelete = async (record) => {
             fill: #1890ff;
         }
     }
-}
-
-/* 调整header-actions布局 */
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    >* {
-        flex-shrink: 0;
-    }
-}
-
-/* 其他原有样式保持不变 */
-.bet-history-container {
-    margin: 16px;
-    padding: 16px;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    font-size: 14px;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-
-    &:hover {
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-    }
-}
-
-.history-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.history-title {
-    display: flex;
-    align-items: center;
-    color: #333;
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-
-    .icon {
-        width: 18px;
-        height: 18px;
-        margin-right: 8px;
-        fill: #1890ff;
-    }
-}
-
-.record-count {
-    margin-left: 8px;
-    font-size: 13px;
-    color: #999;
-    font-weight: normal;
 }
 
 .filter-control {
@@ -623,6 +672,14 @@ const confirmDelete = async (record) => {
     white-space: nowrap;
 }
 
+.col-input,
+.col-desc {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .action-btn {
     display: inline-flex;
     align-items: center;
@@ -706,19 +763,11 @@ const confirmDelete = async (record) => {
     }
 }
 
-@media (max-width: 1200px) {
-    .search-control {
-        display: none;
-    }
-}
-
 @media (max-width: 768px) {
-    .search-control {
-        display: flex;
-    }
-
-    .filter-control {
-        display: flex;
+    .header-actions {
+        .search-control {
+            width: calc(50% - 5px);
+        }
     }
 
     .bet-history-container {
@@ -730,25 +779,6 @@ const confirmDelete = async (record) => {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
-    }
-
-    .header-actions {
-        width: 100%;
-        justify-content: space-between;
-        flex-wrap: wrap;
-    }
-
-    .search-control {
-        width: 100%;
-        order: 1;
-    }
-
-    .filter-control {
-        order: 2;
-    }
-
-    .refresh-btn {
-        order: 3;
     }
 
     .filter-select {
@@ -771,12 +801,21 @@ const confirmDelete = async (record) => {
 }
 
 @media (max-width: 480px) {
-    .search-control {
-        display: none;
-    }
+    .header-actions {
+        .search-control {
+            width: 100%;
+            order: 1;
+        }
 
-    .filter-control {
-        display: flex;
+        .filter-control {
+            order: 2;
+            width: calc(70% - 5px);
+        }
+
+        .refresh-btn {
+            order: 3;
+            width: calc(30% - 5px);
+        }
     }
 
     .bet-history-container {

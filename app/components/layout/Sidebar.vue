@@ -1,19 +1,17 @@
 <template>
-  <aside class="sidebar" :class="{ 'collapsed': isCollapsed, 'expanded': !isCollapsed }" @mouseenter="handleMouseEnter"
+  <aside class="sidebar" :class="{ 'collapsed': isCollapsed }" @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave">
     <div class="logo-area">
       <div class="logo" @click="$emit('toggle')">
         <transition name="logo-text" mode="out-in">
-          <span v-if="!isCollapsed" key="full">小鸡毛与小小白</span>
+          <span v-if="!isCollapsed" key="full">🎰小鸡毛与小小白</span>
           <span v-else key="short" class="lottery-symbol">🎰</span>
         </transition>
       </div>
     </div>
-
     <div class="nav-container">
       <NavMenu :menuItems="menuItems" :is-collapsed="isCollapsed" />
     </div>
-
     <div class="sidebar-footer">
       <UserInfo :is-collapsed="isCollapsed" />
     </div>
@@ -27,7 +25,7 @@ import UserInfo from './UserInfo.vue'
 const props = defineProps({
   isCollapsed: {
     type: Boolean,
-    default: false
+    default: true
   },
   menuItems: {
     type: Array,
@@ -115,38 +113,6 @@ const handleMouseLeave = () => {
   filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.9));
 }
 
-.collapse-btn {
-  position: absolute;
-  top: 50%;
-  right: -12px;
-  width: 24px;
-  height: 24px;
-  background: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transform: translateY(-50%);
-  transition: var(--sidebar-transition);
-  z-index: 10;
-}
-
-.collapse-btn:hover {
-  background: var(--sidebar-highlight);
-  color: white;
-}
-
-.collapse-icon {
-  font-size: 12px;
-  color: #333;
-}
-
-.collapse-btn:hover .collapse-icon {
-  color: white;
-}
-
 .nav-container {
   flex: 1;
   overflow-y: auto;
@@ -175,30 +141,5 @@ const handleMouseLeave = () => {
 .logo-text-leave-from {
   opacity: 1;
   transform: translateX(0);
-}
-
-.rotate-icon-enter-active,
-.rotate-icon-leave-active {
-  transition: transform 0.3s ease;
-}
-
-.rotate-icon-enter-from {
-  transform: rotate(-180deg);
-}
-
-.rotate-icon-leave-to {
-  transform: rotate(180deg);
-}
-
-@media (max-width: 768px) {
-  .sidebar:not(.collapsed) {
-    width: 50%;
-    height: auto;
-    position: relative;
-  }
-
-  .collapse-btn {
-    display: none;
-  }
 }
 </style>

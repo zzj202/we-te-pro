@@ -6,7 +6,6 @@
         {{ mode.label }}
       </button>
     </div>
-
     <div v-if="selectedMode === 'direct'">
       <DirectMode :index="index" />
     </div>
@@ -36,12 +35,15 @@ const props = defineProps({
     required: true
   }
 });
-
 // 响应式数据
 const selectedMode = ref('direct');
 const inputValue = computed(() => {
   const line = mainStore.getAddBetLine(props.index);
-  return line?.inputValue || '';
+  if (line) {
+    return line.inputValue
+  } else {
+    return '';
+  }
 });
 
 // 模式选项
@@ -55,9 +57,7 @@ const modes = [
 // 自动检测输入内容的模式
 const detectedMode = computed(() => {
   const value = inputValue.value.trim();
-
   if (!value) return 'direct';
-
   // 生肖检测
   const zodiacKeywords = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'];
   const hasZodiac = zodiacKeywords.some(keyword => value.includes(keyword));
@@ -65,7 +65,7 @@ const detectedMode = computed(() => {
   const hasTail = /^[0-9一二三四五六七八九十]尾|^[0-9零一二三四五六七八九]头/.test(value);
 
   // 波色检测
-  const hasColor = /红|蓝|绿|红波|蓝波|绿波|波[红蓝绿]|单|双|[大|小][单|双]|大数|小数/.test(value);
+  const hasColor = /红|蓝|绿|红波|蓝波|绿波|波[红蓝绿]|单|双|[大|小][单|双]|大数|小数|大号|小号/.test(value);
 
   if (hasZodiac) return 'zodiac';
   if (hasTail) return 'tail';
@@ -90,7 +90,7 @@ const selectMode = (mode) => {
   padding: 16px;
   border: 1px solid #eaeaea;
   border-radius: 4px;
-  background-color: #f9f9f9;
+
   margin: 10px 0;
   width: 90%;
 }

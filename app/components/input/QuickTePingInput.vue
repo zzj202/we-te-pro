@@ -22,21 +22,17 @@
             </div>
         </div>
 
-        <transition name="fade">
-            <div v-if="errorMessage" class="error-message">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="error-icon">
-                    <path
-                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-                </svg>
-                {{ errorMessage }}
-            </div>
-        </transition>
+
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 
+import { createDiscreteApi } from 'naive-ui'
+
+const { message } = createDiscreteApi(
+    ['message']
+)
 const props = defineProps({
     flatCodes: {
         type: Array as () => string[],
@@ -49,52 +45,59 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:flatCodes', 'update:specialCode'])
 const inputText = ref(props.flatCodes.length ? props.flatCodes.join(' ') + ' ' + props.specialCode : '')
-const errorMessage = ref('')
-
 const hasResult = computed(() => (props.flatCodes, props.flatCodes.length > 0) || props.specialCode !== '')
 
-const processInput = () => {
-    // 清除所有分隔符，只保留数字
-    const numbers = inputText.value.split(/[\s,.，、]+/).filter(n => n.trim() !== '')
 
-    // 重置状态
-    errorMessage.value = ''
+const processInput = () => {
     emit('update:flatCodes', [])
     emit('update:specialCode', '')
-
-    if (numbers.length === 0) return
-
-    // 验证数字
-    for (const num of numbers) {
-        const numInt = parseInt(num, 10)
-
-        if (isNaN(numInt)) {
-            errorMessage.value = `错误："${num}" 不是有效数字`
-            return
-        }
-
-        if (numInt < 1 || numInt > 49) {
-            errorMessage.value = `错误：数字 "${num}" 超出范围 (01-49)`
-            return
-        }
-    }
-    if (numbers.length > 7) {
-        errorMessage.value = `平码和数量错误，共有${numbers.length-1}个`
-    }
-
+    // 清除所有分隔符，只保留数字
+    const numbers = inputText.value.split(/[\s,.，、]+/).filter(n => n.trim() !== '')
     // 格式化为两位数
     const formattedNumbers = numbers.map(num => {
         const numInt = parseInt(num, 10)
         return numInt < 10 ? `0${numInt}` : `${numInt}`
     })
-
     if (formattedNumbers.length <= 6) {
         emit('update:flatCodes', formattedNumbers)
     } else {
         emit('update:specialCode', formattedNumbers[formattedNumbers.length - 1])
         emit('update:flatCodes', formattedNumbers.slice(0, -1))
     }
+
 }
+const check = (): boolean => {
+    if (props.flatCodes.length !== 0) {
+        if (props.flatCodes.length !== 6) {
+            message.error(`平码数量不对，有${props.flatCodes.length}个`)
+            return false
+        }
+        if (!props.specialCode) {
+            message.error(`无特码`)
+            return false
+        }
+        if (hasDuplicates(props.flatCodes)) {
+            message.error(`平码中有相同号码`)
+            return false
+        }
+        if (containsStringIgnoreCase(props.flatCodes, props.specialCode)) {
+            message.error(`特码与平码有相同号码`)
+            return false
+        }
+        const { valid, invalidNumbers } = validateNumbersInRange1to49WithDetails([...props.flatCodes, props.specialCode])
+        if (!valid) {
+            message.error(`号码不符合${invalidNumbers.join(',')}`)
+            return false
+        }
+        return true
+    } else {
+        return true
+    }
+}
+// 暴露方法给父组件
+defineExpose({
+    check: check,
+})
 </script>
 
 <style scoped>
@@ -110,20 +113,20 @@ const processInput = () => {
 }
 
 .input-field {
+    padding: 12px;
     width: 100%;
-    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
     font-size: 16px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    transition: border-color 0.3s ease;
-    background-color: #f9f9f9;
+    transition: border-color 0.3s;
 }
 
 .input-field:focus {
+    border-color: #4f46e5;
     outline: none;
-    border-color: #4a90e2;
-    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
 }
+
 
 .input-hint {
     display: block;
@@ -183,34 +186,6 @@ const processInput = () => {
     font-size: 18px;
 }
 
-.error-message {
-    display: flex;
-    align-items: center;
-    margin-top: 16px;
-    padding: 12px 16px;
-    background-color: #ffebee;
-    color: #d32f2f;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.error-icon {
-    width: 18px;
-    height: 18px;
-    fill: currentColor;
-    margin-right: 8px;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
 
 @media (max-width: 480px) {
     .input-container {

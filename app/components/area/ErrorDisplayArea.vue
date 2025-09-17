@@ -11,9 +11,6 @@
             <strong class="error-title">无效提示</strong>
         </div>
         <p class="error-description">{{ message }}</p>
-        <div class="error-footer">
-            <span class="error-tip">请修改后继续</span>
-        </div>
     </div>
 </template>
 
@@ -40,7 +37,6 @@ defineProps({
 .error-header {
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
     gap: 6px;
 }
 
@@ -59,7 +55,7 @@ defineProps({
 }
 
 .error-description {
-    margin: 0 0 8px 0;
+    margin: 0 0 2px 0;
     color: #57534E;
     font-size: 0.8125rem;
     line-height: 1.4;
