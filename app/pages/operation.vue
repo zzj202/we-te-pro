@@ -60,7 +60,7 @@ const handleConfirm = () => {
 
 <style scoped>
 .betting-parser-container {
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     color: #1a1a1a;

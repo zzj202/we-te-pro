@@ -48,7 +48,7 @@ const refreshPage = () => {
 
 <style scoped lang="scss">
 .topbar {
-  --topbar-height: 64px;
+  --topbar-height: 50px;
   --primary-color: #6366f1;
   --primary-hover: #4f46e5;
   --text-color: #1e293b;
