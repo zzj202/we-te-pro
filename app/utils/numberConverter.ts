@@ -14,6 +14,14 @@ export function convertChineseNumbers(text: string) {
     };
 
     const excludedCharacters = ['百', '千', '万', '亿'];
+
+    if (text.includes('野肖')) {
+        text = text.replace(/野肖/g, '龙虎蛇鼠兔猴');
+    }
+    if (text.includes('家肖')) {
+        text = text.replace(/家肖/g, '牛马羊鸡狗猪');
+    }
+
     // 检查文本是否包含排除字符中的任何一个，不转换
     if (excludedCharacters.some(char => text.includes(char))) {
         return text;
