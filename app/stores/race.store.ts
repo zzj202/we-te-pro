@@ -27,6 +27,7 @@ export const useRaceStore = defineStore('race', {
             return state.raceCategories.find(cat => cat.name === categoryName)?.races || []
         },
         // 获取特定比赛
+        //从所有category找
         getRaceByRaceId: (state) => (raceId: string) => {
             // 遍历所有分类
             for (const category of state.raceCategories) {
@@ -55,20 +56,36 @@ export const useRaceStore = defineStore('race', {
             // 返回比赛数据和所属分类信息
             return race
         },
+        //通过raceID获取比赛分类 
+        getCategoryByRaceId: (state) => (raceId: string) => {
+            // 遍历所有分类
+            for (const category of state.raceCategories) {
+                // 在当前分类中查找匹配的比赛
+                const race = category.races.find(r => r.id === raceId)
+                if (race) {
+                    // 如果找到匹配的比赛，返回比赛数据和所属分类信息
+                    return category
+                }
+            }
+            // 如果没有找到，返回 null
+            return null
+        },
         //如果current不为空 则获取当前比赛分类
         getCurrentCategory: (state) => () => {
-            console.log(state.currentCategoryId)
             return state.raceCategories.find(cat => cat.id === state.currentCategoryId) || null
         },
         //如果current不为空 则获取当前比赛
+        //从categoryId找
         getCurrentRace: (state) => () => {
             const category = state.raceCategories.find(cat => cat.id === state.currentCategoryId)
             if (!category) {
+                // message.error(`category为空`)
                 return null
             }
             // 在分类中查找对应的比赛
             const race = category.races.find(r => r.id === state.currentRaceId)
             if (!race) {
+                message.error(`race为空`)
                 return null
             }
             // 返回比赛数据和所属分类信息
@@ -111,6 +128,7 @@ export const useRaceStore = defineStore('race', {
         //设置currentRaceId
         setCurrentRaceId(raceId: string) {
             this.currentRaceId = raceId
+            this.currentCategoryId = this.getCategoryByRaceId(raceId)?.id as string
         },
 
         //从redis上加载

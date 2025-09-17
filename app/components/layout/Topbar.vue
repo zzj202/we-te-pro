@@ -8,7 +8,7 @@
       </button>
       <h1 class="page-title">{{ title }}</h1>
       <div>{{ raceStore.currentCategoryId ? raceStore.getCurrentCategory().name : '' }}</div>
-      <div>{{ raceStore.currentRaceId ? raceStore.getCurrentRace().name : '' }}</div>
+      <div>{{ raceStore.currentRaceId&&raceStore.getCurrentRace() ? raceStore.getCurrentRace().name : '' }}</div>
     </div>
 
     <div class="right-section">

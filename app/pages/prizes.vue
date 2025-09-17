@@ -18,7 +18,6 @@
                 <span v-if="session.prizes.length > 0" class="badge">{{ session.prizes.length }}</span>
             </button>
         </div>
-
         <!-- 场次数据展示 -->
         <div class="races-container" v-if="activeCategory.prizes.length > 0">
             <div class="races-header">
@@ -58,7 +57,7 @@ definePageMeta({
 
 const prizeStore = usePrizeStore()
 const prizeDialog = ref(null)
-const activeCategory = ref(prizeStore.allPrizeCategories[0] || {
+const activeCategory = ref(prizeStore.getCurrentCategory() || {
     id: '',
     name: '',
     prizes: []

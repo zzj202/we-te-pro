@@ -9,28 +9,26 @@
 
 import { createDiscreteApi } from 'naive-ui'
 
-const {  message } = createDiscreteApi(
-    [ 'message']
+const { message } = createDiscreteApi(
+    ['message']
 )
 definePageMeta({
     layout: 'race-layouts'
 })
 
 const raceStore = useRaceStore()
+const prizeStore = usePrizeStore()
 const dataNumbers = computed(() => {
     return raceStore.getCurrentRace()?.numbers || []
 })
 onBeforeMount(async () => {
     const route = useRoute()
-    // 获取查询参数 (如 ?search=xxx)
-    const sessionId = route.query.sessionId
-    if (sessionId) {
+    const raceId = route.query.raceId
+    if (raceId) {
         await raceStore.loadFromKvAPI()
-        raceStore.setCurrentRaceId(sessionId).then(() => {
-            console.log('场次切换')
-        }).catch(() => {
-            message.error('场次不存在，请手动切换')
-        })
+        raceStore.setCurrentRaceId(raceId)
+        prizeStore.setCurrentCategoryId(raceStore.currentCategoryId)
+
     }
 
 })

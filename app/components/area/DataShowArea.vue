@@ -1,16 +1,16 @@
 <template>
-  <div class="betting-container">
+  <div class="betting-container" v-if="currentRace">
     <!-- 顶部统计信息栏 -->
     <div class="stats-bar">
       <div class="amount-display">
         <div class="total-amount">
           <span class="amount-label">总金额:</span>
-          <span class="amount-value">{{ formatAmount(raceStore.getCurrentRace().addTotalAmount) }}</span>
+          <span class="amount-value">{{ formatAmount(currentRace.addTotalAmount) }}</span>
         </div>
-        <div v-if="raceStore.getCurrentRace().addTotalAmount" class="remaining-amount">
+        <div v-if="currentRace.addTotalAmount" class="remaining-amount">
           <span class="amount-label">剩余金额:</span>
-          <span class="amount-value">{{ formatAmount(raceStore.getCurrentRace().addTotalAmount -
-            raceStore.getCurrentRace().paoTotalAmount) }}</span>
+          <span class="amount-value">{{ formatAmount(currentRace.addTotalAmount -
+            currentRace.paoTotalAmount) }}</span>
         </div>
       </div>
       <div class="action-buttons">
@@ -29,6 +29,9 @@
       <table-zodiac-totals-table :numbers="data" />
       <table-zodiac-numbers-table :numbers="data" :pao-show="paoShow" />
     </div>
+  </div>
+  <div v-else>
+    未展示
   </div>
 </template>
 
@@ -52,14 +55,17 @@ const props = defineProps({
     default: () => []
   }
 })
+const currentRace =computed(() => {
+  return raceStore.getCurrentRace()
+})
 
 
 // 加载数据
 const loadData = async () => {
-  const oldState = raceStore.getCurrentRace()
+  const oldState = currentRace
   try {
     await raceStore.loadFromKvAPI()
-    const newState = raceStore.getCurrentRace()
+    const newState = currentRace
     if (oldState.totalAmount === newState.totalAmount) {
       message.warning('当前数据金额未发生更改', { duration: 1000 })
     } else {

@@ -52,18 +52,20 @@ definePageMeta({
 })
 
 const raceStore = useRaceStore()
+const prizeStore = usePrizeStore()
 const raceCreateDialog = ref(null)
 const raceEditDialog = ref(null)
-const activeCategoryId = ref(raceStore.allRaceCategories[0]?.id || null)
-
+const activeCategoryId = ref(raceStore.getCurrentCategory().id || null)
+const router = useRouter()
 
 // 处理查看场次
 const handleViewRace = (raceId) => {
     raceStore.setCurrentCategoryId(activeCategoryId.value)
     raceStore.setCurrentRaceId(raceId)
-
-    console.log(raceStore.getCurrentCategory())
-    console.log(raceStore.getCurrentRace())
+    prizeStore.setCurrentCategoryId(raceStore.currentCategoryId)
+    // console.log(raceStore.getCurrentCategory())
+    // console.log(raceStore.getCurrentRace())
+    router.push(`/show?raceId=${raceId}`)
 
 };
 
@@ -82,7 +84,6 @@ const handleDeleteRace = (raceId) => {
 };
 
 
-
 // 获取当前选中的分类
 const activeCategory = computed(() => {
     return raceStore.allRaceCategories.find(c => c.id === activeCategoryId.value)
@@ -92,8 +93,6 @@ const activeCategory = computed(() => {
 const setActiveCategory = (categoryId) => {
     activeCategoryId.value = categoryId
 }
-
-
 
 // 处理创建场次
 const handleCreate = (data) => {

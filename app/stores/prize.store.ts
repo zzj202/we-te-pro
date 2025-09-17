@@ -29,8 +29,8 @@ export const usePrizeStore = defineStore('prize', {
             const category = this.prizeCategories.find(cat => cat.id === categoryId) as PrizeCategory
             category.prizes = prizes
         },
-        //更新currentCategoryId
-        updateCurrentCategoryId(categoryId: string) {
+        //currentCategoryId
+        setCurrentCategoryId(categoryId: string) {
             this.currentCategoryId = categoryId
         },
         addPrize(categoryId: string, prize: Prize) {
