@@ -35,8 +35,12 @@ export const DEFAULT_CREATE_RACE_CATEGORY: RaceCategory = {
 }
 
 export const DEFAULT_RACE_CATEGORYS: RaceCategory[] = [{
-    id: '1',
+    id: '0',
     name: '澳门',
+    races: []
+}, {
+    id: '1',
+    name: '香港',
     races: []
 }, {
     id: '2',
@@ -49,12 +53,24 @@ export const DEFAULT_RACE_CATEGORYS: RaceCategory[] = [{
 }, {
     id: '4',
     name: '十二点半',
+    races: []
+}, {
+    id: '5',
+    name: '一点半',
+    races: []
+}, {
+    id: '6',
+    name: 'TEST',
     races: []
 },]
 
 export const DEFAULT_PRIZE_CATEGORYS: PrizeCategory[] = [{
-    id: '1',
+    id: '0',
     name: '澳门',
+    prizes: []
+}, {
+    id: '1',
+    name: '香港',
     prizes: []
 }, {
     id: '2',
@@ -68,10 +84,19 @@ export const DEFAULT_PRIZE_CATEGORYS: PrizeCategory[] = [{
     id: '4',
     name: '十二点半',
     prizes: []
+}, {
+    id: '5',
+    name: '一点半',
+    prizes: []
+}, {
+    id: '6',
+    name: 'TEST',
+    prizes: []
 },]
 
 
-export const LOTTERY_NUMBER_CATEGORIES  = {
+
+export const LOTTERY_NUMBER_CATEGORIES = {
     '单': ['01', '03', '05', '07', '09', '11', '13', '15', '17', '19', '21', '23', '25', '27', '29', '31', '33', '35', '37', '39', '41', '43', '45', '47', '49'],
     '双': ['02', '04', '06', '08', '10', '12', '14', '16', '18', '20', '22', '24', '26', '28', '30', '32', '34', '36', '38', '40', '42', '44', '46', '48'],
     '大': ['25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49'],

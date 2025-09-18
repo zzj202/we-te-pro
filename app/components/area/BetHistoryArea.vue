@@ -10,28 +10,17 @@
                 <span class="record-count" v-if="betRecords.length > 0">(共{{ betRecords.length }}条)</span>
             </h3>
             <div class="header-actions">
-                <!-- 原输入搜索框 -->
-                <div class="search-control">
-                    <input v-model="searchInputValue" type="text" placeholder="搜索原输入..." class="search-input"
-                        @keyup.enter="applySearch" />
-                    <!-- <button class="search-btn" @click="applySearch">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path
-                                d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-                        </svg>
-                    </button> -->
-                </div>
                 <!-- 号码搜索框 -->
                 <div class="search-control">
                     <input v-model="searchNumberValue" type="text" placeholder="搜索号码..." class="search-input"
                         @keyup.enter="applySearch" />
-                    <!-- <button class="search-btn" @click="applySearch">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path
-                                d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-                        </svg>
-                    </button> -->
                 </div>
+                <!-- 原输入搜索框 -->
+                <div class="search-control">
+                    <input v-model="searchInputValue" type="text" placeholder="搜索原输入..." class="search-input"
+                        @keyup.enter="applySearch" />
+                </div>
+
                 <div class="filter-control">
                     <select v-model="filterType" class="filter-select">
                         <option value="all">全部玩法</option>
@@ -160,6 +149,7 @@ const loading = ref(false)
 const filterType = ref('all')
 const searchInputValue = ref('') // 原输入搜索关键字
 const searchNumberValue = ref('') // 号码搜索关键字
+const currentRace = computed(() => { return raceStore.getCurrentRace() })
 
 const emit = defineEmits(['delete-record', 'refresh-records'])
 
@@ -200,16 +190,15 @@ const loadRecords = async () => {
         loading.value = true
         await raceStore.loadFromKvAPI()
         if (props.use == 'bet') {
-            betRecords.value = raceStore.getCurrentRace().betRecords || []
+            betRecords.value = currentRace.value.betRecords || []
         } else if (props.use == 'pao') {
-            betRecords.value = raceStore.getCurrentRace().paoRecords || []
+            betRecords.value = currentRace.value.paoRecords || []
         } else {
 
         }
         lastRefreshTime.value = dayjs()
     } catch (error) {
-        console.error('加载投注记录失败:', error)
-        message.error('加载投注记录失败')
+        message.error('加载投注记录失败，请检查场次')
     } finally {
         loading.value = false
     }

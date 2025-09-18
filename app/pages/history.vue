@@ -3,14 +3,16 @@
         <div class="records-header">
             <h3 class="records-title">
                 <svg class="icon" viewBox="0 0 24 24">
-                    <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm6 16H5V5h2v2h10V5h2v14z"/>
+                    <path
+                        d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm6 16H5V5h2v2h10V5h2v14z" />
                 </svg>
                 操作记录
                 <span class="records-count" v-if="operationRecords.length > 0">({{ operationRecords.length }})</span>
             </h3>
             <button class="refresh-btn" @click="refreshRecords" title="刷新记录">
                 <svg class="icon" viewBox="0 0 24 24">
-                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                    <path
+                        d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
                 </svg>
             </button>
         </div>
@@ -21,7 +23,8 @@
 
         <div v-if="operationRecords.length === 0" class="empty-records">
             <svg class="empty-icon" viewBox="0 0 24 24">
-                <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V18z"/>
+                <path
+                    d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V18z" />
             </svg>
             <p>暂无操作记录</p>
         </div>
@@ -30,7 +33,7 @@
             <li v-for="record in operationRecords" :key="record.id" class="record-item">
                 <div class="record-icon" :class="getRecordTypeClass(record.type)">
                     <svg class="icon" viewBox="0 0 24 24">
-                        <path :d="getRecordIcon(record.type)"/>
+                        <path :d="getRecordIcon(record.type)" />
                     </svg>
                 </div>
                 <div class="record-content">
@@ -67,6 +70,8 @@ dayjs.locale('zh-cn') // 设置为中文
 const raceStore = useRaceStore()
 const operationRecords = ref([])
 const loading = ref(false)
+const currentRace = computed(() => { return raceStore.getCurrentRace() })
+
 
 onMounted(async () => {
     await loadRecords()
@@ -76,12 +81,11 @@ const loadRecords = async () => {
     try {
         loading.value = true
         await raceStore.loadFromKvAPI()
-        operationRecords.value = raceStore.getCurrentRace().operationRecords || []
+        operationRecords.value = currentRace.value.operationRecords || []
         // 按时间倒序排列
         operationRecords.value.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     } catch (error) {
-        console.error('加载操作记录失败:', error)
-        message.error('加载操作记录失败')
+        message.error('加载操作记录失败，请先选择场次')
     } finally {
         loading.value = false
     }
@@ -185,7 +189,7 @@ const getRecordIcon = (type) => {
     font-size: 16px;
     font-weight: 600;
     color: #333;
-    
+
     .icon {
         width: 20px;
         height: 20px;
@@ -253,8 +257,13 @@ const getRecordIcon = (type) => {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .empty-records {
@@ -401,7 +410,7 @@ const getRecordIcon = (type) => {
     .record-icon {
         width: 32px;
         height: 32px;
-        
+
         .icon {
             width: 16px;
             height: 16px;

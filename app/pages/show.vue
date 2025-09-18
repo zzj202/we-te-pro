@@ -1,6 +1,6 @@
 <template>
     <div style="max-width: 800px; margin: 0 auto; text-align: center;">
-        <area-data-show-area :data="dataNumbers"></area-data-show-area>
+        <area-data-show-area></area-data-show-area>
     </div>
 
 </template>
@@ -15,12 +15,8 @@ const { message } = createDiscreteApi(
 definePageMeta({
     layout: 'race-layouts'
 })
-
 const raceStore = useRaceStore()
 const prizeStore = usePrizeStore()
-const dataNumbers = computed(() => {
-    return raceStore.getCurrentRace()?.numbers || []
-})
 onBeforeMount(async () => {
     const route = useRoute()
     const raceId = route.query.raceId

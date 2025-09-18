@@ -57,7 +57,6 @@ const openEdit = (race: Race) => {
     newName.value = race.name
     newFlatCodes.value = race.flatCodes
     newSpecialCode.value = race.specialCode
-
     newRace.value = race
     showRaceEdit.value = true
 }
@@ -77,7 +76,8 @@ const saveName = () => {
     newRace.value.flatCodes = newFlatCodes.value
     newRace.value.specialCode = newSpecialCode.value.trim()
     showRaceEdit.value = false
-    message.success(`修改成功`)
+    emit('save')
+    
 }
 
 // 关闭模态框

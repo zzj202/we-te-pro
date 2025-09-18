@@ -47,8 +47,8 @@
 <script setup>
 import { createDiscreteApi } from 'naive-ui'
 import dayjs from 'dayjs';
-const { message } = createDiscreteApi(
-    ['message']
+const { message, dialog } = createDiscreteApi(
+    ['message', 'dialog']
 )
 
 definePageMeta({
@@ -61,6 +61,10 @@ const activeCategory = ref(prizeStore.getCurrentCategory() || {
     id: '',
     name: '',
     prizes: []
+})
+
+onMounted(()=>{
+    console.log(activeCategory.value)
 })
 
 const handleConfirmAdd = (numbers) => {
@@ -85,8 +89,17 @@ const handleEdit = () => {
 const handleDelete = (prize) => {
     console.log(prize.date)
     if (prize.date === dayjs().format('YYYY年MM月DD日')) {
-        prizeStore.removePrize(activeCategory.value.id, prize.id)
-        message.success(`删除成功`)
+        dialog.error({
+            title: '删除',
+            content: '你确定要删除该场次吗？',
+            positiveText: '确定',
+            negativeText: '取消',
+            maskClosable: false,
+            onPositiveClick: async () => {
+                prizeStore.removePrize(activeCategory.value.id, prize.id)
+                message.success('删除成功')
+            }
+        })
     } else {
         message.error(`不可删除今天以前的记录`)
     }

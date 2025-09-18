@@ -12,10 +12,13 @@
 
 const raceStore = useRaceStore()
 const appStore = useAppStore()
+const prizeStore = usePrizeStore()
 
 onMounted(() => {
   if (appStore.isAuthenticated()) {
     raceStore.loadFromKvAPI()
+    prizeStore.loadFromKvAPI()
+    prizeStore.setCurrentCategoryId(raceStore.currentCategoryId)
   }
 })
 

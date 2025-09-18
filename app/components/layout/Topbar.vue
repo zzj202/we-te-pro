@@ -7,9 +7,18 @@
         </svg>
       </button>
       <h1 class="page-title">{{ title }}</h1>
-      <div>{{ raceStore.currentCategoryId ? raceStore.getCurrentCategory().name : '' }}</div>
-      <div>{{ raceStore.currentRaceId && raceStore.getCurrentRace() ? raceStore.getCurrentRace().name : '' }}</div>
-      <div>总金额{{ raceStore.currentRaceId && raceStore.getCurrentRace() ? raceStore.getCurrentRace().addTotalAmount : '' }}
+      <div class="race-info">
+        <div class="category">
+          {{ raceStore.currentCategoryId ? raceStore.getCurrentCategory().name : '' }}
+        </div>
+
+        <div class="race-name">
+          {{ currentRace ? raceStore.getCurrentRace().name : '' }}
+        </div>
+
+        <div class="total-amount">
+          总金额：{{ currentRace ? raceStore.getCurrentRace().addTotalAmount : '' }}
+        </div>
       </div>
     </div>
 
@@ -28,6 +37,9 @@
 </template>
 
 <script setup>
+
+const currentRace = computed(() => { return raceStore.getCurrentRace() })
+
 defineProps({
   title: {
     type: String,
@@ -152,6 +164,33 @@ const refreshPage = () => {
   transform: rotate(180deg);
 }
 
+.race-info {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  border-radius: 5px;
+
+}
+
+.category {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  padding-right: 10px;
+}
+
+.race-name {
+  font-size: 16px;
+  color: #555;
+  padding-right: 10px;
+}
+
+.total-amount {
+  font-size: 16px;
+  color: #e74c3c;
+  font-weight: bold;
+}
 
 @media (max-width: 768px) {
   .topbar {

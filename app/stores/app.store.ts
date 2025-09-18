@@ -1,23 +1,23 @@
 export const useAppStore = defineStore('app', {
     state: () => ({
-        password: null as string | null,
-        correctPassword: btoa('133')
+        abc: null as string | null,
+        rightPassword: btoa('133')
     }),
     actions: {
         setPassword(pwd: string) {
             // 存储加密后的密码
-            this.password = btoa(pwd)
+            this.abc = btoa(pwd)
         },
         clearPassword() {
-            this.password = null
+            this.abc = null
         },
         validatePassword(pwd: string): boolean {
             // 比较加密后的密码
-            return btoa(pwd) === this.correctPassword
+            return btoa(pwd) === this.rightPassword
         },
         isAuthenticated(): boolean {
             // 比较加密后的密码
-            return this.password === this.correctPassword
+            return this.abc === this.rightPassword
         }
     },
     persist: {

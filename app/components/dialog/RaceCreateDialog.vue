@@ -37,6 +37,11 @@ const props = defineProps({
                 description: '澳门特色场次'
             },
             {
+                name: '香港',
+                icon: '🧵',
+                description: '香港特色场次'
+            },
+            {
                 name: '澳大利亚',
                 icon: '🦘',
                 description: '澳大利亚特色场次'
@@ -50,6 +55,16 @@ const props = defineProps({
                 name: '十二点半',
                 icon: '⏰',
                 description: '12:30场次'
+            },
+            {
+                name: '一点半',
+                icon: '😴',
+                description: '1:30场次'
+            },
+            {
+                name: 'TEST',
+                icon: '😄',
+                description: '测试场次'
             }
         ]
     }

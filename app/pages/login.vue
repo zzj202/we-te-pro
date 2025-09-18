@@ -20,14 +20,34 @@
       <form @submit.prevent="handleSubmit" class="login-form">
         <div class="form-group">
           <div class="input-container">
+            <input id="phone" v-model="phone" type="tel" placeholder=" " class="form-input" @focus="clearErrors"
+              @input="validatePhone" />
+            <label for="phone">手机号</label>
+            <div class="underline"></div>
+          </div>
+          <transition name="fade">
+            <p v-if="phoneError" class="error-message small-error">
+              <svg class="error-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M12 8V12M12 16H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              {{ phoneError }}
+            </p>
+          </transition>
+        </div>
+
+        <div class="form-group">
+          <div class="input-container">
             <input id="password" v-model="password" type="password" placeholder=" " class="form-input"
-              @focus="error = ''" />
+              @focus="clearErrors" />
             <label for="password">密码</label>
             <div class="underline"></div>
           </div>
         </div>
 
-        <button type="submit" class="submit-btn">
+        <button type="submit" class="submit-btn" :disabled="isSubmitting">
           <span class="btn-text">继续</span>
           <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
             xmlns="http://www.w3.org/2000/svg">
@@ -62,20 +82,62 @@ definePageMeta({
 })
 
 const route = useRoute()
+const userStroe = useUserStore()
 const appStore = useAppStore()
 const raceStore = useRaceStore()
+const phone = ref('')
 const password = ref('')
 const error = ref('')
+const phoneError = ref('')
+const isSubmitting = ref(false)
 
-const handleSubmit = () => {
-  if (appStore.validatePassword(password.value)) {
-    appStore.setPassword(password.value)
-    const redirectPath = route.query.redirect || '/'
-    raceStore.loadFromKvAPI()
-    navigateTo(redirectPath)
+// 手机号验证规则
+const validatePhone = () => {
+  const phoneRegex = /^1[3-9]\d{9}$/ // 中国大陆手机号正则
+  if (!phone.value) {
+    phoneError.value = '请输入手机号'
+  } else if (!phoneRegex.test(phone.value)) {
+    phoneError.value = '请输入正确的手机号'
   } else {
-    error.value = '密码错误，请重试'
-    password.value = '' // 清空密码输入框
+    phoneError.value = ''
+  }
+}
+
+const clearErrors = () => {
+  error.value = ''
+  phoneError.value = ''
+}
+
+const handleSubmit = async () => {
+  // 验证手机号
+  validatePhone()
+
+  if (phoneError.value) {
+    return
+  }
+
+  if (!password.value) {
+    error.value = '请输入密码'
+    return
+  }
+
+  isSubmitting.value = true
+
+  try {
+    if (appStore.validatePassword(password.value)) {
+      appStore.setPassword(password.value)
+      const redirectPath = route.query.redirect || '/'
+      await raceStore.loadFromKvAPI()
+      await userStroe.add(phone.value)
+      navigateTo(redirectPath)
+    } else {
+      error.value = '密码错误，请重试'
+      password.value = '' // 清空密码输入框
+    }
+  } catch (err) {
+    error.value = '登录失败，请稍后再试'
+  } finally {
+    isSubmitting.value = false
   }
 }
 </script>
@@ -147,6 +209,7 @@ const handleSubmit = () => {
 
 .form-group {
   margin-bottom: 28px;
+  position: relative;
 }
 
 .input-container {
@@ -224,9 +287,14 @@ label {
   box-shadow: 0 4px 6px rgba(79, 70, 229, 0.1);
 }
 
-.submit-btn:hover {
+.submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(79, 70, 229, 0.15);
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .btn-text {
@@ -237,7 +305,7 @@ label {
   transition: transform 0.3s ease;
 }
 
-.submit-btn:hover .arrow-icon {
+.submit-btn:hover:not(:disabled) .arrow-icon {
   transform: translateX(4px);
 }
 
@@ -256,6 +324,13 @@ label {
   animation: shake 0.5s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 10;
+}
+
+.small-error {
+  position: relative;
+  bottom: -5px;
+  margin-top: 8px;
+  animation: none;
 }
 
 .error-icon {

@@ -79,13 +79,13 @@ export const useRaceStore = defineStore('race', {
         getCurrentRace: (state) => () => {
             const category = state.raceCategories.find(cat => cat.id === state.currentCategoryId)
             if (!category) {
-                // message.error(`category为空`)
+                message.warning(`当前未选择比赛类别`)
                 return null
             }
             // 在分类中查找对应的比赛
             const race = category.races.find(r => r.id === state.currentRaceId)
             if (!race) {
-                message.error(`race为空`)
+                message.warning(`当前未选择场次`)
                 return null
             }
             // 返回比赛数据和所属分类信息
@@ -96,6 +96,7 @@ export const useRaceStore = defineStore('race', {
     actions: {
         // 添加新的比赛分类
         addCategory(categoryName: string) {
+            this.loadFromKvAPI()
             this.raceCategories.push({
                 ...DEFAULT_CREATE_RACE_CATEGORY,
                 id: generateUniqueId(),
@@ -104,21 +105,25 @@ export const useRaceStore = defineStore('race', {
             this.saveTokvAPI()
         },
         // 添加比赛到特定分类
-        addRace(categoryName: string): RaceCategory {
+        async addRace(categoryName: string): Promise<RaceCategory> {
+            await this.loadFromKvAPI()
             const category = this.raceCategories.find(cat => cat.name === categoryName) as RaceCategory
             if (category) {
+                const raceId = generateUniqueId()
                 category.races.unshift({
                     ...DEFAULT_RACE,
-                    name: `${category.name}_${dayjs().format('M月D日H时m分')}`,
-                    id: generateUniqueId(),
+                    name: `${category.name}_${category.races.length + 1}`,
+                    id: raceId,
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                 })
+                this.currentCategoryId = category.id
+                this.currentRaceId = raceId
                 message.success(`创建成功`)
             } else {
                 message.error(`未找到该比赛种类`)
             }
-            this.saveTokvAPI()
+            await this.saveTokvAPI()
             return category
         },
         //设置currentCategoryId
@@ -139,10 +144,9 @@ export const useRaceStore = defineStore('race', {
                 this.raceCategories = categories
                 if (!this.currentCategoryId) {
                     this.currentCategoryId = categories[0].id
-                }
-                if (!this.currentRaceId) {
                     this.currentRaceId = categories[0].races[0].id
                 }
+
             }
         },
         //保存redis
@@ -155,6 +159,7 @@ export const useRaceStore = defineStore('race', {
         //加注
         async place(addBetLines: BetLine | BetLine[]) {
             //首先获取race
+            await this.loadFromKvAPI()
             const race = this.getRaceByCategoryIdRaceId(this.currentCategoryId, this.currentRaceId)
             if (!race) {
                 message.error(`场次不存在`)
@@ -208,6 +213,7 @@ export const useRaceStore = defineStore('race', {
         },
         //抛注
         async placePao(addBetLines: BetLine | BetLine[]) {
+            await this.loadFromKvAPI()
             //首先获取race
             const race = this.getRaceByCategoryIdRaceId(this.currentCategoryId, this.currentRaceId)
             if (!race) {
@@ -262,6 +268,7 @@ export const useRaceStore = defineStore('race', {
         },
         //撤销加注
         async cancelBet(record: BetRecord) {
+            await this.loadFromKvAPI()
             //首先获取race
             const race = this.getRaceByCategoryIdRaceId(this.currentCategoryId, this.currentRaceId)
             if (!race) {
@@ -295,6 +302,7 @@ export const useRaceStore = defineStore('race', {
         },
         //撤销抛注
         async cancelPao(record: BetRecord) {
+            await this.loadFromKvAPI()
             //首先获取race
             const race = this.getRaceByCategoryIdRaceId(this.currentCategoryId, this.currentRaceId)
             if (!race) {
@@ -327,9 +335,6 @@ export const useRaceStore = defineStore('race', {
             message.success('撤销成功')
         },
 
-
-
-
         // 更新比赛信息
         updateRace(categoryId: string, raceId: string, updates: Partial<Race>) {
             const category = this.raceCategories.find(cat => cat.id === categoryId)
@@ -345,12 +350,26 @@ export const useRaceStore = defineStore('race', {
         },
 
         // 删除比赛
-        removeRace(categoryId: string, raceId: string) {
-            const category = this.raceCategories.find(cat => cat.id === categoryId)
-            if (category) {
-                category.races = category.races.filter(r => r.id !== raceId)
+        async removeRace(raceId: string) {
+            await this.loadFromKvAPI();
+            let removedRace = null;
+
+            // 遍历所有分类
+            for (const category of this.raceCategories) {
+                // 查找比赛索引
+                const raceIndex = category.races.findIndex(r => r.id === raceId);
+                if (raceIndex !== -1) {
+                    // 从分类中删除比赛
+                    category.races.splice(raceIndex, 1);
+                    this.currentRaceId = category.races[0]?.id as string
+                    break;  // 找到并删除后退出循环
+                }
             }
-        },
+            // 保存更改到 KV API
+            await this.saveTokvAPI();
+            // 返回被删除的比赛信息（可选）
+            return removedRace;
+        }
     },
     persist: {
         storage: piniaPluginPersistedstate.localStorage(),

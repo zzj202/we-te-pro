@@ -60,6 +60,10 @@ const allNumbers = computed(() => {
 
 const selectedNumbers = computed(() => {
     errorMessage.value = ''
+    if (inputValue.value.includes('平') || inputValue.value.includes('连') || inputValue.value.includes('免')) {
+        errorMessage.value = '暂不支持平投注';
+        return [];
+    }
     const inputValueTmp = inputValue.value.split(/共|合计|共计/)[0];
     if (!inputValueTmp.match(/\d+/g)) {
         if (inputValue.value != '') {

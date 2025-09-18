@@ -84,9 +84,12 @@ const resetValidation = () => {
 const validateInput = (input) => {
     input = input?.split(/共|合计/)[0]
     if (!input) return;
-
-    if (input.includes('平')||input.includes('连')) {
+    if (input.includes('平') || input.includes('连')) {
         errorMessage.value = '暂不支持平投注';
+        return;
+    }
+    if (input.includes('免')) {
+        errorMessage.value = '请注意免 和 兔 的区分';
         return;
     }
 

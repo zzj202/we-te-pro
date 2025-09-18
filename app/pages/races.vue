@@ -2,8 +2,7 @@
     <div class="game-sessions-container">
         <div class="header">
             <div class="header-content">
-                <h2 class="header-title">当前场次：
-                    <!-- {{ raceStore.getCurrentRace().name }} -->
+                <h2 class="header-title">场次信息
                 </h2>
                 <p class="header-subtitle">所有游戏场次信息</p>
             </div>
@@ -13,7 +12,7 @@
         </div>
         <!-- 使用封装的模态框组件 -->
         <dialog-race-create-dialog ref="raceCreateDialog" @create="handleCreate" @close="handleCloseModal" />
-        <dialog-race-edit-dialog ref="raceEditDialog"></dialog-race-edit-dialog>
+        <dialog-race-edit-dialog ref="raceEditDialog" @save="handleEditSave"></dialog-race-edit-dialog>
         <!-- 种类选择按钮 -->
         <div class="category-tabs">
             <button v-for="category in raceStore.allRaceCategories" :key="category.id" class="tab-button"
@@ -47,6 +46,11 @@
 </template>
 
 <script setup>
+import { createDiscreteApi } from 'naive-ui'
+
+const { dialog, message } = createDiscreteApi(
+    ['dialog', 'message']
+)
 definePageMeta({
     layout: 'race-layouts'
 })
@@ -55,17 +59,19 @@ const raceStore = useRaceStore()
 const prizeStore = usePrizeStore()
 const raceCreateDialog = ref(null)
 const raceEditDialog = ref(null)
+
 const activeCategoryId = ref(raceStore.getCurrentCategory()?.id || null)
 const router = useRouter()
 
-
+// 获取当前选中的分类
+const activeCategory = computed(() => {
+    return raceStore.allRaceCategories.find(c => c.id === activeCategoryId.value)
+})
 // 处理查看场次
 const handleViewRace = (raceId) => {
     raceStore.setCurrentCategoryId(activeCategoryId.value)
     raceStore.setCurrentRaceId(raceId)
     prizeStore.setCurrentCategoryId(raceStore.currentCategoryId)
-    // console.log(raceStore.getCurrentCategory())
-    // console.log(raceStore.getCurrentRace())
     router.push(`/show?raceId=${raceId}`)
 
 };
@@ -81,14 +87,18 @@ const handleEditRace = (raceId) => {
 // 处理删除场次
 const handleDeleteRace = (raceId) => {
     console.log('删除场次:', raceId);
-    // 实际业务逻辑...
+    dialog.error({
+        title: '删除',
+        content: '你确定要删除该场次吗？',
+        positiveText: '确定',
+        negativeText: '取消',
+        maskClosable: false,
+        onPositiveClick: async () => {
+            raceStore.removeRace(raceId)
+            message.success('删除成功')
+        }
+    })
 };
-
-
-// 获取当前选中的分类
-const activeCategory = computed(() => {
-    return raceStore.allRaceCategories.find(c => c.id === activeCategoryId.value)
-})
 
 // 设置当前选中的分类
 const setActiveCategory = (categoryId) => {
@@ -96,11 +106,15 @@ const setActiveCategory = (categoryId) => {
 }
 
 // 处理创建场次
-const handleCreate = (data) => {
-    const category = raceStore.addRace(data.name)
+const handleCreate = async (data) => {
+    const category = await raceStore.addRace(data.name)
     setActiveCategory(category.id)
 }
-
+//处理确认修改
+const handleEditSave = () => {
+    raceStore.saveTokvAPI()
+    message.success(`修改成功`)
+}
 // 处理模态框关闭
 const handleCloseModal = () => {
     console.log('模态框已关闭')

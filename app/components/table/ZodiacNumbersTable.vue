@@ -15,6 +15,9 @@
           <span class="pao-value">{{ formatAmount(item.amount - item.paoAmount) }}</span>
         </div>
       </div>
+      <div v-if="lastShow" class="last-appear" :class="getLastAppearClass(item.number)">
+        {{ getLastAppearText(item.number) }}
+      </div>
     </div>
   </div>
 </template>
@@ -31,6 +34,14 @@ const props = defineProps({
   paoShow: {
     type: Boolean,
     default: false
+  },
+  lastShow: {
+    type: Boolean,
+    default: false
+  },
+  numberLastAppearMap: {
+    type: Object,
+    default: () => ({})
   }
 })
 
@@ -58,6 +69,23 @@ const getAmountClass = (amount) => {
   if (amount >= 500) return 'amount-medium'
   return 'amount-default'
 }
+
+// 获取最后出现次数的文本
+const getLastAppearText = (number) => {
+  const numStr = number.toString().padStart(2, '0')
+  const appearCount = props.numberLastAppearMap[numStr] || 0
+  return appearCount === 0 ? '新' : `${appearCount}期`
+}
+
+// 根据最后出现次数获取样式类
+const getLastAppearClass = (number) => {
+  const numStr = number.toString().padStart(2, '0')
+  const appearCount = props.numberLastAppearMap[numStr] || 0
+  if (appearCount === 1) return 'last-appear-new'
+  if (appearCount <= 2) return 'last-appear-recent'
+  if (appearCount <= 10) return 'last-appear-medium'
+  return 'last-appear-long'
+}
 </script>
 
 <style scoped>
@@ -73,6 +101,8 @@ const getAmountClass = (amount) => {
   padding: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s;
+  position: relative;
+  overflow: hidden;
 }
 
 .zodiac-card:hover {
@@ -125,6 +155,38 @@ const getAmountClass = (amount) => {
   padding: 5px;
   font-size: 16px;
   font-weight: 800;
+}
+
+.last-appear {
+  /* position: absolute;
+  top: 14px;
+  right: 7px; */
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+  color: white;
+}
+
+.last-appear-new {
+  background-color: #ef4444;
+  /* 红色表示新出现 */
+}
+
+.last-appear-recent {
+  background-color: #08a36f;
+  /* 绿色表示近期出现 */
+}
+
+.last-appear-medium {
+  background-color: #63626291;
+
+  /* 橙色表示中等时间未出现 */
+}
+
+.last-appear-long {
+  background-color: rgba(156, 156, 156, 0.548);
+  /* 灰色表示长时间未出现 */
 }
 
 /* 金额颜色分类和大小变化 */
@@ -188,6 +250,11 @@ const getAmountClass = (amount) => {
 
   .zodiac-name {
     font-size: 11px;
+  }
+
+  .last-appear {
+    font-size: 10px;
+    padding: 1px 4px;
   }
 
   /* 响应式调整字体大小 */

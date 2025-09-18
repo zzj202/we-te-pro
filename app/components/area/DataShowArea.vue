@@ -2,21 +2,25 @@
   <div class="betting-container" v-if="currentRace">
     <!-- 顶部统计信息栏 -->
     <div class="stats-bar">
-      <div class="amount-display">
+      <div class="amount-container">
         <div class="total-amount">
-          <span class="amount-label">总金额:</span>
+          <span class="amount-label">总金额：</span>
           <span class="amount-value">{{ formatAmount(currentRace.addTotalAmount) }}</span>
         </div>
         <div v-if="currentRace.addTotalAmount" class="remaining-amount">
-          <span class="amount-label">剩余金额:</span>
-          <span class="amount-value">{{ formatAmount(currentRace.addTotalAmount -
-            currentRace.paoTotalAmount) }}</span>
+          <span class="amount-label">剩余金额：</span>
+          <span class="amount-value">{{ formatAmount(currentRace.addTotalAmount - currentRace.paoTotalAmount)
+          }}</span>
         </div>
       </div>
       <div class="action-buttons">
-        <button class="btn btn-pao" @click="paoShow = !paoShow">
+        <button class="btn btn-pao" @click="togglePaoShow">
           <i :class="['icon-pao', paoShow ? 'active' : '']"></i>
           {{ paoShow ? '隐藏剩抛' : '显示剩抛' }}
+        </button>
+        <button class="btn btn-history" @click="toggleLastShow">
+          <i :class="['icon-history', lastShow ? 'active' : '']"></i>
+          {{ lastShow ? '隐藏往期' : '显示往期' }}
         </button>
         <button class="btn btn-refresh" @click="loadData">
           <i class="icon-refresh"></i>
@@ -26,8 +30,11 @@
     </div>
     <!-- 主要内容区域 -->
     <div class="content-area">
-      <table-zodiac-totals-table :numbers="data" />
-      <table-zodiac-numbers-table :numbers="data" :pao-show="paoShow" />
+
+      <table-zodiac-numbers-table :numberLastAppearMap="numberLastAppearMap" :numbers="dataNumbers" :pao-show="paoShow"
+        :lastShow="lastShow" />
+      <table-zodiac-totals-table :numbers="dataNumbers" />
+      <area-line-chart-area :lotteryData="prizes"></area-line-chart-area>
     </div>
   </div>
   <div v-else>
@@ -47,22 +54,39 @@ dayjs.locale('zh-cn')
 
 const { message } = createDiscreteApi(['message'])
 const raceStore = useRaceStore()
+const prizeStore = usePrizeStore()
 const paoShow = ref(false)
-const props = defineProps({
-  data: {
-    type: Array,
-    required: true,
-    default: () => []
-  }
-})
+const lastShow = ref(false)
+
+const numberLastAppearMap = ref()
+
 const currentRace = computed(() => {
   return raceStore.getCurrentRace()
 })
+const dataNumbers = computed(() => {
+  return currentRace.value.numbers || []
+})
+const prizes = computed(() => {
+  return prizeStore.getCurrentCategory().prizes
+})
 
+// 切换剩抛显示状态
+const togglePaoShow = () => {
+  paoShow.value = !paoShow.value
+}
+
+// 切换往期显示状态
+const toggleLastShow = () => {
+  lastShow.value = !lastShow.value
+}
+
+onMounted(() => {
+  numberLastAppearMap.value = prizeStore.getNumberLastAppearBycategoryId()
+})
 
 // 加载数据
 const loadData = async () => {
-  const oldState = raceStore.getCurrentRace()
+  const oldState = currentRace.value
   try {
     await raceStore.loadFromKvAPI()
     const newState = currentRace.value
@@ -84,8 +108,6 @@ const loadData = async () => {
     console.error('加载数据失败:', error)
   }
 }
-
-
 
 // 格式化金额显示
 const formatAmount = (amount) => {
@@ -117,36 +139,32 @@ const formatAmount = (amount) => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.amount-display {
+
+.amount-container {
   display: flex;
-  align-items: center;
-  gap: 24px;
+  gap: 18px;
+  margin-top: 12px;
+}
 
-  .total-amount,
-  .remaining-amount {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+.amount-label {
+  font-size: 14px;
+  color: #666;
+  margin-right: 8px;
+}
 
-  .amount-label {
-    font-size: 16px;
-    color: #666;
-    font-weight: 500;
-  }
+.amount-value {
+  font-size: 18px;
+  font-weight: bold;
+}
 
-  .amount-value {
-    font-size: 18px;
-    font-weight: 600;
+.total-amount .amount-value {
+  color: #e74c3c;
+  /* 红色表示总金额 */
+}
 
-    .total-amount & {
-      color: #1890ff;
-    }
-
-    .remaining-amount & {
-      color: #52c41a;
-    }
-  }
+.remaining-amount .amount-value {
+  color: #27ae60;
+  /* 绿色表示剩余金额 */
 }
 
 .action-buttons {
@@ -185,21 +203,25 @@ const formatAmount = (amount) => {
     }
   }
 
-  .btn-column {
-    background-color: #409eff;
-    color: white;
-
-    .icon-column {
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M3 5v14h18V5H3zm16 2v10H5V7h14zM7 9v6h2V9H7zm4 0v6h2V9h-2zm4 0v6h2V9h-2z"/></svg>');
-    }
-  }
-
   .btn-pao {
     background-color: #fa8c16;
     color: white;
 
     .icon-pao {
       background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.31-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"/></svg>');
+
+      &.active {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>');
+      }
+    }
+  }
+
+  .btn-history {
+    background-color: #722ed1;
+    color: white;
+
+    .icon-history {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>');
 
       &.active {
         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>');
@@ -231,12 +253,6 @@ const formatAmount = (amount) => {
     align-items: flex-start;
   }
 
-  .amount-display {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
   .action-buttons {
     width: 100%;
     justify-content: flex-end;
@@ -254,7 +270,7 @@ const formatAmount = (amount) => {
 
   .action-buttons {
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: flex-end;
 
     .btn {
       padding: 6px 10px;
