@@ -7,11 +7,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const userStore = useUserStore()
   const whitelist = ['/login', '/']
 
+  const updateList = ['/show']
+
   if (whitelist.includes(to.path)) {
     return
   }
   if (appStore.isAuthenticated() && userStore.isLoggedIn) {
-    await userStore.updateUserActivity()
+    if (updateList.includes(to.path)) {
+      userStore.updateUserActivity()
+    }
     return
   }
   return navigateTo(`/login?redirect=${encodeURIComponent(to.fullPath)}`)
