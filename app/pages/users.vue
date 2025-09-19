@@ -219,6 +219,7 @@ const showNotificationMessage = (message, type) => {
 .container {
     max-width: 800px;
     margin: 0 auto;
+    padding: 24px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -460,10 +461,6 @@ const showNotificationMessage = (message, type) => {
     .stats {
         flex-direction: column;
         gap: 12px;
-    }
-
-    .stat-item {
-        width: 100%;
     }
 
     .search-bar {
