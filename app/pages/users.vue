@@ -217,9 +217,8 @@ const showNotificationMessage = (message, type) => {
 
 <style scoped>
 .container {
-    max-width: 900px;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 24px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 

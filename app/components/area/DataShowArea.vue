@@ -32,14 +32,14 @@
           <span class="amount-value">{{ formatAmount(currentRace.addTotalAmount - currentRace.paoTotalAmount)
           }}</span>
         </div>
-        <div class="total-amount">
+        <!-- <div class="total-amount">
           <span class="amount-label"> 平码金额:</span>
           <span class="amount-value"> {{ formatAmount(otherTotalAmount) }}</span>
         </div>
         <div class="remaining-amount">
           <span class="amount-label"> 剩余平码金额:</span>
           <span class="amount-value"> {{ formatAmount(otherTotalAmount - otherTotalAmountPao) }}</span>
-        </div>
+        </div> -->
       </div>
     </div>
     <!-- 主要内容区域 -->
@@ -182,12 +182,12 @@ const formatAmount = (amount) => {
 }
 
 .total-amount .amount-value {
-  color: #000000;
+  color: red;
   /* 红色表示总金额 */
 }
 
 .remaining-amount .amount-value {
-  color: #818181;
+  color: green;
   /* 绿色表示剩余金额 */
 }
 

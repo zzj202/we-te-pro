@@ -17,7 +17,7 @@
         </div>
 
         <div class="total-amount">
-          平特总金额：{{ formatAmount(currentRace ? currentRace.addTotalAmount + otherTotalAmount : 0) }}
+          特码总金额：{{ formatAmount(currentRace ? currentRace.addTotalAmount : 0) }}
         </div>
       </div>
     </div>
