@@ -8,8 +8,6 @@
 </template>
 
 <script setup>
-
-
 const raceStore = useRaceStore()
 const appStore = useAppStore()
 const prizeStore = usePrizeStore()

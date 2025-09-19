@@ -86,7 +86,7 @@ const dataNumbers = computed(() => {
   return currentRace.value.numbers || []
 })
 const prizes = computed(() => {
-  return prizeStore.getCurrentCategory().prizes
+  return prizeStore.getCurrentCategory()?.prizes || []
 })
 const otherTotalAmount = computed(() => {
   if (!currentRace.value?.otherAdd?.length) return 0

@@ -128,7 +128,7 @@ const handleSubmit = async () => {
       appStore.setPassword(password.value)
       const redirectPath = route.query.redirect || '/'
       await raceStore.loadFromKvAPI()
-      await userStroe.add(phone.value)
+      await userStroe.userLogin(phone.value)
       navigateTo(redirectPath)
     } else {
       error.value = '密码错误，请重试'

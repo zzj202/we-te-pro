@@ -53,7 +53,7 @@ function toggleSidebar() {
 }
 
 function checkMobile() {
-  isMobile.value = window.innerWidth < 1400
+  isMobile.value = window.innerWidth < 578
   if (isMobile.value) {
     isSidebarCollapsed.value = true
   }

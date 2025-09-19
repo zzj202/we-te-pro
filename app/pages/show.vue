@@ -24,9 +24,9 @@ onBeforeMount(async () => {
         await raceStore.loadFromKvAPI()
         raceStore.setCurrentRaceId(raceId)
         prizeStore.setCurrentCategoryId(raceStore.currentCategoryId)
-        if(!prizeStore.getCurrentCategory().prizes.length){
-            prizeStore.loadFromKvAPI()
-        }
+    }
+    if (!prizeStore.getCurrentCategory() || !prizeStore.getCurrentCategory().prizes.length) {
+        await prizeStore.loadFromKvAPI()
     }
 })
 
