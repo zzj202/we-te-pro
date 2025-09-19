@@ -120,7 +120,6 @@ const handleSubmit = async () => {
     error.value = '请输入密码'
     return
   }
-
   isSubmitting.value = true
 
   try {

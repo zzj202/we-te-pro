@@ -51,7 +51,7 @@ export const useUserStore = defineStore('user', {
 
         // 更新用户最后活动时间
         async updateUserActivity() {
-            console.log(1)
+            await this.loadUsersFromRedis()
             if (!this.currentUser) return
             const now = new Date().toISOString()
             this.currentUser.lastActivity = now
