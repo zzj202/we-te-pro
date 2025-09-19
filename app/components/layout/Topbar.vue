@@ -13,11 +13,11 @@
         </div>
 
         <div class="race-name">
-          {{ currentRace ? raceStore.getCurrentRace().name : '' }}
+          {{ currentRace ? currentRace.name : '' }}
         </div>
 
         <div class="total-amount">
-          总金额：{{ currentRace ? raceStore.getCurrentRace().addTotalAmount : '' }}
+          平特总金额：{{ formatAmount(currentRace ? currentRace.addTotalAmount + otherTotalAmount : 0) }}
         </div>
       </div>
     </div>
@@ -38,8 +38,6 @@
 
 <script setup>
 
-const currentRace = computed(() => { return raceStore.getCurrentRace() })
-
 defineProps({
   title: {
     type: String,
@@ -53,8 +51,21 @@ defineProps({
 
 defineEmits(['toggle-sidebar'])
 const raceStore = useRaceStore()
-
-
+const currentRace = computed(() => {
+  return raceStore.getCurrentRace()
+})
+const otherTotalAmount = computed(() => {
+  if (!currentRace.value?.otherAdd?.length) return 0
+  return currentRace.value.otherAdd.reduce((sum, bet) => sum + Number(bet.totalAmount), 0)
+})
+// 格式化金额显示
+const formatAmount = (amount) => {
+  return new Intl.NumberFormat('zh-CN', {
+    style: 'currency',
+    currency: 'CNY',
+    minimumFractionDigits: 0
+  }).format(amount)
+}
 const refreshPage = () => {
   window.location.reload()
 }
@@ -125,6 +136,7 @@ const refreshPage = () => {
 
 .right-section {
   display: flex;
+
   align-items: center;
   gap: 16px;
 }
@@ -133,6 +145,7 @@ const refreshPage = () => {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin: auto;
 }
 
 .action-btn {
@@ -187,8 +200,8 @@ const refreshPage = () => {
 }
 
 .total-amount {
-  font-size: 16px;
-  color: #e74c3c;
+  font-size: 18px;
+  color: #ad03d8;
   font-weight: bold;
 }
 

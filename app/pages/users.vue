@@ -74,7 +74,7 @@ const formatPhoneNumber = (phone) => {
 }
 
 const copyToClipboard = (phone) => {
-    message.warnning(`暂不支持`)
+    message.warning(`暂不支持`)
     // navigator.clipboard.writeText(phone)
     // showCopySuccess.value = true
     // setTimeout(() => {

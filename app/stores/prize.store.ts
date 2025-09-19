@@ -18,7 +18,6 @@ export const usePrizeStore = defineStore('prize', {
         allPrizeCategories: (state) => state.prizeCategories,
         //如果current不为空 则获取当前比赛分类 历史开奖记录
         getCurrentCategory: (state) => () => {
-            console.log(state.currentCategoryId)
             return state.prizeCategories.find(cat => cat.id === state.currentCategoryId) || null
         },
     },
@@ -51,16 +50,32 @@ export const usePrizeStore = defineStore('prize', {
 
         //从redis上加载
         async loadFromKvAPI() {
-            const kvAPI = userKvAPI()
-            const categories = await kvAPI.get('prize:category')
-            if (categories) {
-                this.prizeCategories = categories
+            try {
+                loadingBar.start()
+                const kvAPI = userKvAPI()
+                const categories = await kvAPI.get('prize:category')
+                if (categories) {
+                    this.prizeCategories = categories
+                }
             }
+            catch (error) {
+                console.error(error)
+            } finally {
+                loadingBar.finish()
+            }
+
         },
         //保存redis
         async saveTokvAPI() {
-            const kvAPI = userKvAPI()
-            await kvAPI.set('prize:category', this.prizeCategories)
+            try {
+                const kvAPI = userKvAPI()
+                await kvAPI.set('prize:category', this.prizeCategories)
+
+            } catch (error) {
+                console.error(error)
+            } finally {
+                loadingBar.finish()
+            }
         },
 
         //统计出号码最近一次出现 距离

@@ -12,6 +12,7 @@
             </div>
         </div>
         <div class="bottom-layout">
+            <area-input-other-area :use="'pao'"></area-input-other-area>
             <area-bet-history-area :use="'pao'"></area-bet-history-area>
         </div>
     </div>

@@ -1,19 +1,29 @@
 <template>
-    <div>
-        <button @click="click">澳门开奖记录</button>
-        <button @click="click2">香港开奖记录</button>
-        <button @click="click4">澳大利亚开奖记录</button>
-
-
-        <button @click="click3">午夜开奖记录</button>
+    <div class="lottery-records-container">
+        <div class="lottery-buttons">
+            <button class="lottery-btn macau" @click="click">
+                <span class="flag-icon">🇲🇴</span>
+                澳门开奖记录重置
+            </button>
+            <button class="lottery-btn hongkong" @click="click2">
+                <span class="flag-icon">🇭🇰</span>
+                香港开奖记录重置
+            </button>
+            <button class="lottery-btn australia" @click="click4">
+                <span class="flag-icon">🇦🇺</span>
+                澳大利亚开奖记录重置
+            </button>
+            <button class="lottery-btn midnight" @click="click3">
+                <span class="icon">🌙</span>
+                午夜开奖记录重置
+            </button>
+        </div>
     </div>
 </template>
 
 
 <script setup>
-
 const prizeStore = usePrizeStore()
-
 
 //澳大利亚
 
@@ -12423,3 +12433,83 @@ const click = () => {
 
 
 </script>
+
+<style>
+.lottery-records-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+.lottery-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.lottery-btn {
+    padding: 14px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.lottery-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.lottery-btn:active {
+    transform: translateY(0);
+}
+
+.flag-icon,
+.icon {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+/* 澳门按钮样式 */
+.macau {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+/* 香港按钮样式 */
+.hongkong {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+/* 澳大利亚按钮样式 */
+.australia {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+/* 午夜按钮样式 */
+.midnight {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+/* 响应式设计 */
+@media (max-width: 600px) {
+    .lottery-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .lottery-btn {
+        padding: 12px 16px;
+    }
+}
+</style>

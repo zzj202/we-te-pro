@@ -63,7 +63,7 @@ const selectedNumbers = computed(() => {
         (input.includes('蓝') && input.includes('绿')) ||
         (input.includes('红') && input.includes('蓝') && input.includes('绿'))
     ) {
-        errorMessage.value = '同时有多种波色';
+        errorMessage.value = '同时有多种波色，请分开输入';
         return []
     }
     let typeStr = ''
@@ -194,7 +194,7 @@ const validateInput = (input) => {
     if (input.includes('个') || input.includes('个数') || input.includes('各') || input.includes('各数')) {
         amount.value = Number(amountMatch[0]);
     } else {
-        errorMessage.value = '金额不准确，请明确是否为 各数。 请在金额前添加各';
+        errorMessage.value = '金额不准确，请明确是否为 ‘各数’。 请在金额前添加‘各’即可';
     }
 };
 

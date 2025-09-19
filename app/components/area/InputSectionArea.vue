@@ -83,6 +83,7 @@ const confirm = () => {
 
 <style scoped>
 .input-section {
+    margin: 16px;
     margin-bottom: 16px;
     background: #ffffff;
     border-radius: 12px;

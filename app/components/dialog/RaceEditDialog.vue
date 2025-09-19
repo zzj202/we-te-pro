@@ -75,9 +75,14 @@ const saveName = () => {
     newRace.value.name = newName.value.trim()
     newRace.value.flatCodes = newFlatCodes.value
     newRace.value.specialCode = newSpecialCode.value.trim()
+    if (!newRace.value.flatCodes.length) {
+        newRace.value.status = 'active'
+    } else {
+        newRace.value.status = 'finish'
+    }
     showRaceEdit.value = false
     emit('save')
-    
+
 }
 
 // 关闭模态框

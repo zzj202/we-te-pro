@@ -1,18 +1,10 @@
 <template>
   <div class="betting-container" v-if="currentRace">
-    <!-- 顶部统计信息栏 -->
-    <div class="stats-bar">
-      <div class="amount-container">
-        <div class="total-amount">
-          <span class="amount-label">总金额：</span>
-          <span class="amount-value">{{ formatAmount(currentRace.addTotalAmount) }}</span>
-        </div>
-        <div v-if="currentRace.addTotalAmount" class="remaining-amount">
-          <span class="amount-label">剩余金额：</span>
-          <span class="amount-value">{{ formatAmount(currentRace.addTotalAmount - currentRace.paoTotalAmount)
-          }}</span>
-        </div>
-      </div>
+
+
+
+    <!-- 操作按钮 -->
+    <div class="content-area">
       <div class="action-buttons">
         <button class="btn btn-pao" @click="togglePaoShow">
           <i :class="['icon-pao', paoShow ? 'active' : '']"></i>
@@ -28,17 +20,45 @@
         </button>
       </div>
     </div>
+    <!-- 金额信息栏 -->
+    <div class="stats-bar">
+      <div class="amount-container">
+        <div class="total-amount">
+          <span class="amount-label">特码金额：</span>
+          <span class="amount-value">{{ formatAmount(currentRace.addTotalAmount) }}</span>
+        </div>
+        <div class="remaining-amount">
+          <span class="amount-label">剩余特码金额：</span>
+          <span class="amount-value">{{ formatAmount(currentRace.addTotalAmount - currentRace.paoTotalAmount)
+          }}</span>
+        </div>
+        <div class="total-amount">
+          <span class="amount-label"> 平码金额:</span>
+          <span class="amount-value"> {{ formatAmount(otherTotalAmount) }}</span>
+        </div>
+        <div class="remaining-amount">
+          <span class="amount-label"> 剩余平码金额:</span>
+          <span class="amount-value"> {{ formatAmount(otherTotalAmount - otherTotalAmountPao) }}</span>
+        </div>
+      </div>
+    </div>
     <!-- 主要内容区域 -->
     <div class="content-area">
-
       <table-zodiac-numbers-table :numberLastAppearMap="numberLastAppearMap" :numbers="dataNumbers" :pao-show="paoShow"
         :lastShow="lastShow" />
       <table-zodiac-totals-table :numbers="dataNumbers" />
+    </div>
+    <!-- 走势图 -->
+    <div class="content-area">
       <area-line-chart-area :lotteryData="prizes"></area-line-chart-area>
+    </div>
+    <!-- 柱状图 -->
+    <div class="content-area">
+      <area-bar-chart-area :frequencyData="prizeStore.getNumberFrequency()"></area-bar-chart-area>
     </div>
   </div>
   <div v-else>
-    未展示
+    暂无
   </div>
 </template>
 
@@ -57,7 +77,6 @@ const raceStore = useRaceStore()
 const prizeStore = usePrizeStore()
 const paoShow = ref(false)
 const lastShow = ref(false)
-
 const numberLastAppearMap = ref()
 
 const currentRace = computed(() => {
@@ -69,7 +88,14 @@ const dataNumbers = computed(() => {
 const prizes = computed(() => {
   return prizeStore.getCurrentCategory().prizes
 })
-
+const otherTotalAmount = computed(() => {
+  if (!currentRace.value?.otherAdd?.length) return 0
+  return currentRace.value.otherAdd.reduce((sum, bet) => sum + Number(bet.totalAmount), 0)
+})
+const otherTotalAmountPao = computed(() => {
+  if (!currentRace.value?.otherAdd?.length) return 0
+  return currentRace.value.otherPao.reduce((sum, bet) => sum + Number(bet.totalAmount), 0)
+})
 // 切换剩抛显示状态
 const togglePaoShow = () => {
   paoShow.value = !paoShow.value
@@ -112,7 +138,7 @@ const loadData = async () => {
 // 格式化金额显示
 const formatAmount = (amount) => {
   return new Intl.NumberFormat('zh-CN', {
-    style: 'currency',
+    // style: 'currency',
     currency: 'CNY',
     minimumFractionDigits: 0
   }).format(amount)
@@ -130,12 +156,11 @@ const formatAmount = (amount) => {
 
 .stats-bar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 12px;
   background-color: white;
   border-radius: 10px;
   padding: 12px 16px;
-  margin-bottom: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
@@ -143,11 +168,10 @@ const formatAmount = (amount) => {
 .amount-container {
   display: flex;
   gap: 18px;
-  margin-top: 12px;
 }
 
 .amount-label {
-  font-size: 14px;
+  font-size: 16px;
   color: #666;
   margin-right: 8px;
 }
@@ -158,18 +182,20 @@ const formatAmount = (amount) => {
 }
 
 .total-amount .amount-value {
-  color: #e74c3c;
+  color: #000000;
   /* 红色表示总金额 */
 }
 
 .remaining-amount .amount-value {
-  color: #27ae60;
+  color: #818181;
   /* 绿色表示剩余金额 */
 }
 
 .action-buttons {
   display: flex;
+  justify-content: end;
   gap: 12px;
+  margin: auto 0;
 
   .btn {
     display: flex;
@@ -244,6 +270,7 @@ const formatAmount = (amount) => {
   border-radius: 10px;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin: 5px 0;
 }
 
 @media (max-width: 768px) {

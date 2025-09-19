@@ -1,17 +1,19 @@
 <template>
     <div class="betting-parser-container">
+
         <div class="two-column-layout">
             <!-- 左边列 -->
             <div class="left-column">
                 <area-input-section-area @confirm="handleConfirm" />
-
             </div>
             <!-- 右边列 -->
             <div class="right-column">
                 <area-results-section-area @confirm="handleConfirm" ref="resultRef" />
             </div>
         </div>
+
         <div class="bottom-layout">
+            <area-input-other-area></area-input-other-area>
             <area-bet-history-area></area-bet-history-area>
         </div>
     </div>

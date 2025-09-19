@@ -85,14 +85,13 @@ const validateInput = (input) => {
     input = input?.split(/共|合计/)[0]
     if (!input) return;
     if (input.includes('平') || input.includes('连')) {
-        errorMessage.value = '暂不支持平投注';
+        errorMessage.value = '暂不支持‘平’和‘连’投注';
         return;
     }
     if (input.includes('免')) {
-        errorMessage.value = '请注意免 和 兔 的区分';
+        errorMessage.value = '请注意‘免’和‘兔’的区分';
         return;
     }
-
     const amountMatch = input.match(/\d+/g);
     if (!amountMatch || amountMatch.length !== 1) {
         errorMessage.value = '金额格式错误';
@@ -129,7 +128,7 @@ const validateInput = (input) => {
                 if (input.includes('个数') || input.includes('各数') || input.includes('各号') || input.includes('个号') || input.includes('各码') || input.includes('各马') || input.includes('个码') || input.includes('个马')) {
                     amount.value = tmpAmount
                 } else {
-                    errorMessage.value = '输入不明确，请确认是否有 各'
+                    errorMessage.value = '输入不明确，请确认是否有 ‘各’'
                 }
 
             }

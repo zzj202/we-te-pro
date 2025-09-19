@@ -25,23 +25,23 @@ const isSidebarCollapsed = ref(true)
 const isMobile = ref(false)
 const route = useRoute()
 const menuItems = [
-
-  { path: '/show', text: '数据展示', icon: '📈' },
-  { path: '/operation', text: '加注操作', icon: '💸' },
-  { path: '/addHistory', text: '加注记录', icon: '🗃️' },
-  { path: '/history', text: '操作记录', icon: '📝' },
   { path: '/races', text: '比赛管理', icon: '🕒' },
+  { path: '/show', text: '数据展示', icon: '📈' },
+  { path: '/operation', text: '加注操作+++', icon: '💸' },
+  { path: '/addHistory', text: '加注记录', icon: '🗃️' },
 
-  { path: '/users', text: '用户记录', icon: '🌍' },
+
   // { path: '/dashboard', text: '仪表盘', icon: '📊' },
   // { path: '/operation', text: '批量加注', icon: '💸' },
   // { path: '/oneOperation', text: '单次加注', icon: '💰' },
 
-  { path: '/prizes', text: '开奖记录', icon: '🙂' },
-  { path: '/settings', text: '系统设置', icon: '⚙️' },
   // { path: '/settings', text: '系统设置', icon: '⚙️' },
   { path: '/developing', text: '发展', icon: '😄' },
-  { path: '/pao', text: '场次抛号', icon: '🍵' }
+  { path: '/pao', text: '抛注操作---', icon: '🍵' },
+  { path: '/history', text: '操作记录', icon: '📝' },
+  { path: '/users', text: '用户记录', icon: '🌍' },
+  { path: '/prizes', text: '开奖记录', icon: '🙂' },
+  { path: '/settings', text: '系统设置', icon: '⚙️' },
 ]
 
 const currentRouteTitle = computed(() => {
@@ -53,7 +53,7 @@ function toggleSidebar() {
 }
 
 function checkMobile() {
-  isMobile.value = window.innerWidth < 768
+  isMobile.value = window.innerWidth < 1400
   if (isMobile.value) {
     isSidebarCollapsed.value = true
   }

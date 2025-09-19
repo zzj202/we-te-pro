@@ -1,7 +1,6 @@
 <template>
     <div>
-        <button @click="click">11111</button>
-        {{ res }}
+
     </div>
 </template>
 
@@ -15,7 +14,5 @@ const res = ref()
 
 const prizeStore = usePrizeStore()
 
-const click = () => {
-    res.value = prizeStore.getNumberLastAppearBycategoryId(prizeStore.currentCategoryId)
-}
+
 </script>

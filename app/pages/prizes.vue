@@ -63,9 +63,6 @@ const activeCategory = ref(prizeStore.getCurrentCategory() || {
     prizes: []
 })
 
-onMounted(()=>{
-    console.log(activeCategory.value)
-})
 
 const handleConfirmAdd = (numbers) => {
     prizeStore.addPrize(activeCategory.value.id, {
@@ -83,7 +80,6 @@ const handleView = (prize) => {
 const handleEdit = () => {
     message.warning(`暂不支持编辑`)
 };
-
 
 // 处理删除场次
 const handleDelete = (prize) => {
@@ -115,7 +111,6 @@ const setActiveGameSession = (sessionId) => {
 </script>
 
 <style scoped>
-/* Your existing styles remain unchanged */
 .game-sessions-container {
     padding: 24px;
     max-width: 1400px;

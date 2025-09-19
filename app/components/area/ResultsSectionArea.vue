@@ -83,6 +83,7 @@ defineExpose({
 
 <style scoped>
 .results-section {
+    margin: 16px;
     background: #ffffff;
     border-radius: 12px;
     padding: 16px;

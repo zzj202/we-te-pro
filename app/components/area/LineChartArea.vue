@@ -95,18 +95,18 @@ const initChart = () => {
                         mode: 'index',
                         intersect: false
                     },
-                    // 数据标签插件配置
-                    datalabels: {
-                        display: true,
-                        color: '#000',
-                        align: 'top',
-                        anchor: 'center',
-                        font: {
-                            weight: 'bold',
-                            size: 10
-                        },
-                        formatter: (value) => value
-                    }
+                    // // 数据标签插件配置
+                    // datalabels: {
+                    //     display: true,
+                    //     color: '#000',
+                    //     align: 'top',
+                    //     anchor: 'center',
+                    //     font: {
+                    //         weight: 'bold',
+                    //         size: 10
+                    //     },
+                    //     formatter: (value) => value
+                    // }
                 },
                 scales: {
                     y: {

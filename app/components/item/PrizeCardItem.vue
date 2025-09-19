@@ -9,11 +9,18 @@
     </div>
 
     <div class="race-details">
-      <div class="detail-item">
+      <div class="detail-item numbers-row">
         <span class="detail-label">开奖号码：</span>
-        <span class="detail-value">
-          <span class="ball" v-for="(num, i) in prize.numbers" :key="i">{{ num }}</span>
-        </span>
+        <div class="numbers-container">
+      <span 
+            class="ball" 
+            :class="{ 'special-ball': i === prize.numbers.length - 1 }" 
+            v-for="(num, i) in prize.numbers" 
+            :key="i"
+          >
+            {{ num }}
+          </span>
+        </div>
       </div>
     </div>
 
@@ -97,13 +104,16 @@ const statusClass = computed(() => {
 
 .race-title {
   flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .race-name {
   font-weight: 600;
   color: #333;
   font-size: 16px;
-  margin-right: 10px;
 }
 
 .race-id {
@@ -139,9 +149,6 @@ const statusClass = computed(() => {
 }
 
 .race-details {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
   margin-bottom: 15px;
 }
 
@@ -150,19 +157,23 @@ const statusClass = computed(() => {
   align-items: center;
 }
 
+.detail-item.numbers-row {
+  align-items: flex-start;
+}
+
 .detail-label {
   color: #888;
   font-size: 13px;
   margin-right: 8px;
   min-width: 60px;
+  white-space: nowrap;
 }
 
-.detail-value {
-  font-size: 13px;
-  color: #555;
+.numbers-container {
   display: flex;
-  gap: 5px;
   flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
 }
 
 .ball {
@@ -172,10 +183,15 @@ const statusClass = computed(() => {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #4f46e5;
+  background: #4f46e5; /* 默认颜色 */
   color: white;
   font-size: 12px;
   font-weight: bold;
+  flex-shrink: 0;
+}
+
+.special-ball {
+  background: #ff00c8; /* 最后一个球的特殊颜色 */
 }
 
 .race-actions {
@@ -222,12 +238,34 @@ const statusClass = computed(() => {
 }
 
 @media (max-width: 768px) {
-  .race-details {
-    grid-template-columns: 1fr;
+  .race-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .race-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .race-status {
+    align-self: flex-start;
   }
 
   .race-actions {
     justify-content: flex-start;
+  }
+
+  .detail-item.numbers-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .detail-label {
+    margin-right: 0;
   }
 }
 </style>

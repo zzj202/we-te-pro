@@ -138,24 +138,35 @@ export const useRaceStore = defineStore('race', {
 
         //从redis上加载
         async loadFromKvAPI() {
-            const kvAPI = userKvAPI()
-            const categories = await kvAPI.get('race:category')
-            if (categories) {
-                this.raceCategories = categories
-                if (!this.currentCategoryId) {
-                    this.currentCategoryId = categories[0].id
-                    this.currentRaceId = categories[0].races[0].id
+            try {
+                loadingBar.start()
+                const kvAPI = userKvAPI()
+                const categories = await kvAPI.get('race:category')
+                if (categories) {
+                    this.raceCategories = categories
+                    if (!this.currentCategoryId) {
+                        this.currentCategoryId = categories[0].id
+                        this.currentRaceId = categories[0].races[0].id
+                    }
                 }
-
+            } catch (error) {
+                console.error(error)
+            } finally {
+                loadingBar.finish()
             }
+
         },
         //保存redis
         async saveTokvAPI() {
-            const kvAPI = userKvAPI()
-            await kvAPI.set('race:category', this.raceCategories)
+            try {
+                const kvAPI = userKvAPI()
+                await kvAPI.set('race:category', this.raceCategories)
+            } catch (error) {
+                console.error(error)
+            } finally {
+                loadingBar.finish()
+            }
         },
-
-
         //加注
         async place(addBetLines: BetLine | BetLine[]) {
             //首先获取race
@@ -369,7 +380,172 @@ export const useRaceStore = defineStore('race', {
             await this.saveTokvAPI();
             // 返回被删除的比赛信息（可选）
             return removedRace;
-        }
+        },
+
+
+        // 添加其他投注
+        async addOtherBet(betData: { inputValue: string, totalAmount: number }) {
+            await this.loadFromKvAPI()
+            const race = this.getRaceByCategoryIdRaceId(this.currentCategoryId, this.currentRaceId)
+            if (!race) {
+                message.error(`场次不存在`)
+                return
+            }
+            if (race) {
+                const newBet = {
+                    id: Date.now().toString(), // 使用时间戳作为ID
+                    inputValue: betData.inputValue,
+                    totalAmount: betData.totalAmount
+                };
+
+                if (!race.otherAdd) {
+                    race.otherAdd = [];
+                }
+
+                race.otherAdd.unshift(newBet);
+
+                // 创建操作记录
+                const operationRecord: OperationRecord = {
+                    id: Date.now().toString(),
+                    type: 'OTHER_ADD',
+                    timestamp: new Date().toISOString(),
+                    description: `其它加注 | 加注总金额${newBet.totalAmount}元 | 原输入：${newBet.inputValue}`
+                };
+                race.operationRecords.push(operationRecord)
+                await this.saveTokvAPI()
+                message.success(`投注成功！总金额${newBet.totalAmount}元`)
+            }
+        },
+        // 更新其他投注
+        async updateOtherBet(index: number, betData: { inputValue: string, totalAmount: number }) {
+            await this.loadFromKvAPI()
+            const race = this.getRaceByCategoryIdRaceId(this.currentCategoryId, this.currentRaceId)
+            if (!race) {
+                message.error(`场次不存在`)
+                return
+            }
+            if (race && race.otherAdd?.[index]) {
+                race.otherAdd[index] = {
+                    ...race.otherAdd[index],
+                    inputValue: betData.inputValue,
+                    totalAmount: betData.totalAmount
+                };
+                // 创建操作记录
+                const operationRecord: OperationRecord = {
+                    id: Date.now().toString(),
+                    type: 'OTHER_ADD_UPDATE',
+                    timestamp: new Date().toISOString(),
+                    description: `其它加注更新 | 加注总金额${betData.totalAmount}元 | 原输入：${betData.inputValue}`
+                };
+                race.operationRecords.push(operationRecord)
+                await this.saveTokvAPI()
+                message.success(`投注更新成功！总金额${betData.totalAmount}元`)
+            }
+        },
+        // 删除其他投注
+        async removeOtherBet(index: number) {
+            await this.loadFromKvAPI()
+            const race = this.getRaceByCategoryIdRaceId(this.currentCategoryId, this.currentRaceId)
+            if (!race) {
+                message.error(`场次不存在`)
+                return
+            }
+            if (race && race.otherAdd?.[index]) {
+                // 创建操作记录
+                const operationRecord: OperationRecord = {
+                    id: Date.now().toString(),
+                    type: 'OTHER_ADD_REMOVE',
+                    timestamp: new Date().toISOString(),
+                    description: `其它加注删除 | 删除加注总金额${race.otherAdd?.[index].totalAmount}元 | 原输入：${race.otherAdd?.[index].inputValue}`
+                };
+                race.operationRecords.push(operationRecord)
+                race.otherAdd.splice(index, 1);
+                await this.saveTokvAPI()
+                message.success(`投注删除成功！`)
+            }
+        },
+
+        // 添加其他抛注
+        async addOtherPao(betData: { inputValue: string, totalAmount: number }) {
+            await this.loadFromKvAPI()
+            const race = this.getRaceByCategoryIdRaceId(this.currentCategoryId, this.currentRaceId)
+            if (!race) {
+                message.error(`场次不存在`)
+                return
+            }
+            if (race) {
+                const newBet = {
+                    id: Date.now().toString(), // 使用时间戳作为ID
+                    inputValue: betData.inputValue,
+                    totalAmount: betData.totalAmount
+                };
+
+                if (!race.otherPao) {
+                    race.otherPao = [];
+                }
+
+                race.otherPao.unshift(newBet);
+                // 创建操作记录
+                const operationRecord: OperationRecord = {
+                    id: Date.now().toString(),
+                    type: 'OTHER_PAO',
+                    timestamp: new Date().toISOString(),
+                    description: `其它抛注 | 抛注总金额${newBet.totalAmount}元 | 原输入：${newBet.inputValue}`
+                };
+                race.operationRecords.push(operationRecord)
+                await this.saveTokvAPI()
+                message.success(`抛注成功！总金额${newBet.totalAmount}元`)
+            }
+        },
+        // 更新其他抛注
+        async updateOtherPao(index: number, betData: { inputValue: string, totalAmount: number }) {
+            await this.loadFromKvAPI()
+            const race = this.getRaceByCategoryIdRaceId(this.currentCategoryId, this.currentRaceId)
+            if (!race) {
+                message.error(`场次不存在`)
+                return
+            }
+            if (race && race.otherPao?.[index]) {
+                race.otherPao[index] = {
+                    ...race.otherPao[index],
+                    inputValue: betData.inputValue,
+                    totalAmount: betData.totalAmount
+                };
+                // 创建操作记录
+                const operationRecord: OperationRecord = {
+                    id: Date.now().toString(),
+                    type: 'OTHER_PAO_UPDATE',
+                    timestamp: new Date().toISOString(),
+                    description: `其它抛注更新 | 抛注总金额${betData.totalAmount}元 | 原输入：${betData.inputValue}`
+                };
+                race.operationRecords.push(operationRecord)
+                await this.saveTokvAPI()
+                message.success(`抛注更新成功！总金额${betData.totalAmount}元`)
+            }
+        },
+        // 删除其他抛注
+        async removeOtherPao(index: number) {
+            await this.loadFromKvAPI()
+            const race = this.getRaceByCategoryIdRaceId(this.currentCategoryId, this.currentRaceId)
+            if (!race) {
+                message.error(`场次不存在`)
+                return
+            }
+            if (race && race.otherPao?.[index]) {
+                // 创建操作记录
+                const operationRecord: OperationRecord = {
+                    id: Date.now().toString(),
+                    type: 'OTHER_PAO_REMOVE',
+                    timestamp: new Date().toISOString(),
+                    description: `其它加注删除 | 删除加注总金额${race.otherPao?.[index].totalAmount}元 | 原输入：${race.otherPao?.[index].inputValue}`
+                };
+                race.operationRecords.push(operationRecord)
+                race.otherPao.splice(index, 1);
+                await this.saveTokvAPI()
+                message.success(`删除抛注成功！`)
+            }
+        },
+
     },
     persist: {
         storage: piniaPluginPersistedstate.localStorage(),

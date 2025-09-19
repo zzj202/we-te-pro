@@ -29,7 +29,7 @@
             </div>
         </div>
         <ErrorDisplayArea v-if="errorMessage" :message="errorMessage" />
-        <!--千万不能删除-->
+        <!--千万不能删除 删除功能必报错-->
         <div v-if="isValid"></div>
     </div>
 </template>
@@ -60,8 +60,16 @@ const allNumbers = computed(() => {
 
 const selectedNumbers = computed(() => {
     errorMessage.value = ''
-    if (inputValue.value.includes('平') || inputValue.value.includes('连') || inputValue.value.includes('免')) {
-        errorMessage.value = '暂不支持平投注';
+    if (inputValue.value.includes('平') || inputValue.value.includes('连')) {
+        errorMessage.value = '平 和连 暂不支持平投注';
+        return [];
+    }
+    if (inputValue.value.includes('免')) {
+        errorMessage.value = '请区分‘免’ 和‘兔’';
+        return [];
+    }
+    if (inputValue.value.includes('点')) {
+        errorMessage.value = '关键字 ‘点’ 判断，请删除‘点’';
         return [];
     }
     const inputValueTmp = inputValue.value.split(/共|合计|共计/)[0];
