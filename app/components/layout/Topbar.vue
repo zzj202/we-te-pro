@@ -201,7 +201,7 @@ const refreshPage = () => {
 
 .total-amount {
   font-size: 18px;
-  color: #ad03d8;
+  color: #e70303;
   font-weight: bold;
 }
 

@@ -66,7 +66,7 @@
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" />
                             </svg>
-                            最近: {{ formatDate(user.lastActivity) }}
+                            最近: {{ formatDate(user.lastActivity) }}{{ `(${formatRelativeTime(user.lastActivity)})` }}
                         </span>
                         <span class="meta-item">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -123,15 +123,19 @@
 
 <script setup>
 
+import dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
+dayjs.locale('zh-cn') // 设置为中文
 definePageMeta({
     layout: 'race-layouts'
 })
-const userStore = useUserStore()
 
+const userStore = useUserStore()
 const searchQuery = ref('')
 const showNotification = ref(false)
 const notificationMessage = ref('')
 const notificationType = ref('success')
+
 
 const loggedIn = computed(() => userStore.isLoggedIn)
 const totalUsers = computed(() => userStore.totalUsers)
@@ -148,7 +152,10 @@ onMounted(async () => {
     console.log(userStore.currentUser)
     await userStore.loadUsersFromRedis()
 })
-
+// 格式化相对时间（显示与当前时间的相对关系）
+const formatRelativeTime = (timestamp) => {
+    return dayjs(timestamp).fromNow()
+}
 const refreshData = async () => {
     try {
         await userStore.loadUsersFromRedis()

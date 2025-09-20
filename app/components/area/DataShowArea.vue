@@ -1,8 +1,5 @@
 <template>
   <div class="betting-container" v-if="currentRace">
-
-
-
     <!-- 操作按钮 -->
     <div class="content-area">
       <div class="action-buttons">
@@ -138,7 +135,7 @@ const loadData = async () => {
 // 格式化金额显示
 const formatAmount = (amount) => {
   return new Intl.NumberFormat('zh-CN', {
-    // style: 'currency',
+    style: 'currency',
     currency: 'CNY',
     minimumFractionDigits: 0
   }).format(amount)
@@ -149,7 +146,6 @@ const formatAmount = (amount) => {
 .betting-container {
   background-color: #f8f9fa;
   border-radius: 12px;
-  padding: 16px;
   max-width: 100%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
@@ -268,7 +264,7 @@ const formatAmount = (amount) => {
 .content-area {
   background-color: white;
   border-radius: 10px;
-  padding: 16px;
+  padding: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   margin: 5px 0;
 }
