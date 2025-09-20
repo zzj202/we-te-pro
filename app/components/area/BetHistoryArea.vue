@@ -143,14 +143,20 @@ dayjs.extend(relativeTime)
 dayjs.locale('zh-cn') // 设置为中文
 
 const raceStore = useRaceStore()
-const betRecords = ref([])
+
 const lastRefreshTime = ref(dayjs())
 const loading = ref(false)
 const filterType = ref('all')
 const searchInputValue = ref('') // 原输入搜索关键字
 const searchNumberValue = ref('') // 号码搜索关键字
 const currentRace = computed(() => { return raceStore.getCurrentRace() })
-
+const betRecords = computed(() => {
+    if (props.use == 'bet') {
+        return currentRace.value.betRecords || []
+    } else if (props.use == 'pao') {
+        return currentRace.value.paoRecords || []
+    }
+})
 const emit = defineEmits(['delete-record', 'refresh-records'])
 
 // 计算属性：过滤后的记录
@@ -189,13 +195,13 @@ const loadRecords = async () => {
     try {
         loading.value = true
         await raceStore.loadFromKvAPI()
-        if (props.use == 'bet') {
-            betRecords.value = currentRace.value.betRecords || []
-        } else if (props.use == 'pao') {
-            betRecords.value = currentRace.value.paoRecords || []
-        } else {
+        // if (props.use == 'bet') {
+        //     betRecords.value = currentRace.value.betRecords || []
+        // } else if (props.use == 'pao') {
+        //     betRecords.value = currentRace.value.paoRecords || []
+        // } else {
 
-        }
+        // }
         lastRefreshTime.value = dayjs()
     } catch (error) {
         message.error('加载投注记录失败，请检查场次')
