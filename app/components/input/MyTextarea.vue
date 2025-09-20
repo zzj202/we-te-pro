@@ -29,8 +29,8 @@ const emit = defineEmits(['update:modelValue', 'input'])
 
 const textareaRef = ref(null)
 const isFocused = ref(false)
-const lineHeight = 28 // 行高
-const visibleLines = 19 // 可见行数
+const lineHeight = 30 // 行高
+const visibleLines = 21 // 可见行数
 
 const modelValue = computed({
     get: () => props.modelValue,

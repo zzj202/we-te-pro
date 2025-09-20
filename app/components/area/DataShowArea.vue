@@ -147,6 +147,7 @@ const formatAmount = (amount) => {
   background-color: #f8f9fa;
   border-radius: 12px;
   max-width: 100%;
+  padding: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
@@ -284,7 +285,7 @@ const formatAmount = (amount) => {
 
 @media (max-width: 576px) {
   .betting-container {
-    padding: 12px;
+    padding: 6px;
   }
 
   .stats-bar {

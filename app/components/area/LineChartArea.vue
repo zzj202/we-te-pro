@@ -70,7 +70,6 @@ const initChart = () => {
     }
     if (chartCanvas.value && props.lotteryData.length > 0) {
         const ctx = chartCanvas.value.getContext('2d')
-
         chartInstance = new Chart(ctx, {
             type: 'line',
             data: prepareChartData(),
@@ -82,7 +81,7 @@ const initChart = () => {
                         display: true,
                         text: '特码走势图',
                         font: {
-                            size: 16
+                            size: 20
                         }
                     },
                     legend: {
@@ -95,18 +94,17 @@ const initChart = () => {
                         mode: 'index',
                         intersect: false
                     },
-                    // // 数据标签插件配置
-                    // datalabels: {
-                    //     display: true,
-                    //     color: '#000',
-                    //     align: 'top',
-                    //     anchor: 'center',
-                    //     font: {
-                    //         weight: 'bold',
-                    //         size: 10
-                    //     },
-                    //     formatter: (value) => value
-                    // }
+                    datalabels: {
+                        display: true,
+                        color: '#000',
+                        align: 'top',
+                        anchor: 'center',
+                        font: {
+                            weight: 'bold',
+                            size: 17
+                        },
+                        formatter: (value) => value
+                    }
                 },
                 scales: {
                     y: {
@@ -129,27 +127,6 @@ const initChart = () => {
                     intersect: false
                 }
             },
-            // 添加数据标签插件
-            plugins: [{
-                id: 'datalabels',
-                afterDatasetsDraw(chart, args, options) {
-                    const { ctx, data, chartArea: { top, bottom, left, right, width, height }, scales: { x, y } } = chart;
-                    ctx.font = 'bold 12px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'bottom';
-
-                    chart.data.datasets.forEach((dataset, datasetIndex) => {
-                        const meta = chart.getDatasetMeta(datasetIndex);
-                        meta.data.forEach((point, index) => {
-                            const value = dataset.data[index];
-                            const xPos = point.x;
-                            const yPos = point.y - 10; // 调整标签位置
-                            ctx.fillStyle = '#000';
-                            ctx.fillText(value, xPos, yPos);
-                        });
-                    });
-                }
-            }]
         })
     }
 }
