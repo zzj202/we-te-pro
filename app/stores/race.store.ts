@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { DEFAULT_CREATE_RACE_CATEGORY, DEFAULT_RACE_CATEGORYS, DEFAULT_RACE } from '~/constants/race.constants'
 import type { RaceCategory, Race, BetLine, BetRecord, OperationRecord } from '~/types/race.types'
 import { createDiscreteApi } from 'naive-ui'
-import dayjs from 'dayjs'
+
 
 const { message, loadingBar } = createDiscreteApi(
     ['message', 'loadingBar']
